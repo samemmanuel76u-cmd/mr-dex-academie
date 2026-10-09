@@ -25,22 +25,65 @@
     }
   </script>
 </head>
-<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased">
+<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased flex flex-col justify-between">
+
+  <!-- En-tête -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       <div class="flex items-center gap-2 cursor-pointer" onclick="afficherListeModules()">
         <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded border border-emerald-500/20 text-sm">DEX</span>
         <h1 class="font-bold text-lg text-slate-100">Mr. DEX Académie</h1>
       </div>
-      <div class="flex items-center gap-3 text-sm text-slate-400">
+      
+      <!-- Zone Profil / Déconnexion -->
+      <div id="user-profile-header" class="hidden flex items-center gap-4 text-sm">
+        <span class="text-xs text-slate-400 hidden sm:inline">Connecté : <strong id="user-email-display" class="text-slate-200"></strong></span>
         <span>Progression : <strong id="progress-text" class="text-emerald-400">0/12</strong></span>
+        <button onclick="deconnecterUtilisateur()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-semibold rounded border border-slate-700 transition">
+          Déconnexion
+        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Vue Liste des modules -->
-    <div id="view-modules">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+    
+    <!-- ÉCRAN D'AUTHENTIFICATION (Connexion / Inscription) -->
+    <div id="view-auth" class="max-w-md mx-auto my-12 p-6 border border-slate-800 bg-slate-900 rounded-2xl shadow-xl">
+      <div class="text-center mb-6">
+        <span class="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded-full text-xs border border-emerald-500/20 mb-3">Accès Académie</span>
+        <h2 id="auth-title" class="text-2xl font-bold text-slate-100">Connexion à votre compte</h2>
+        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Connectez-vous pour accéder à vos 12 modules de formation.</p>
+      </div>
+
+      <form id="auth-form" onsubmit="gererAuthentification(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Adresse e-mail</label>
+          <input type="email" id="auth-email" required placeholder="nom@exemple.com" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Mot de passe</label>
+          <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
+          Se connecter
+        </button>
+      </form>
+
+      <p id="auth-feedback" class="mt-4 text-xs text-center font-medium"></p>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 text-center">
+        <p class="text-xs text-slate-400" id="auth-toggle-text">
+          Pas encore de compte ? 
+          <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S'inscrire</button>
+        </p>
+      </div>
+    </div>
+
+    <!-- VUE LISTE DES MODULES (Visible après connexion) -->
+    <div id="view-modules" class="hidden">
       <div class="mb-8">
         <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
         <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage en cybersécurité.</p>
@@ -48,7 +91,7 @@
       <div id="modules-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
-    <!-- Vue Domicile du Cours & Quiz -->
+    <!-- VUE COURS ET QUIZ -->
     <div id="view-course" class="hidden max-w-3xl mx-auto">
       <button onclick="afficherListeModules()" class="mb-6 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-2">
         ← Retour au programme
@@ -76,21 +119,21 @@
         <p id="quiz-feedback" class="mt-3 text-xs text-center font-medium"></p>
       </div>
     </div>
+
   </main>
 
+  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+    <p>© 2026 Mr. DEX Académie. Tous droits réservés.</p>
+  </footer>
+
   <script>
-    // Configuration Supabase avec vos identifiants
+    // Config Supabase
     const SUPABASE_URL = "https://qfjrtmexoivkhtkyexsb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_pmQuZLo-g4gfS7rdLUmPOw_pzQwRQK7";
-    
-    let supabaseClient = null;
-    try {
-      if (window.supabase && window.supabase.createClient) {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      }
-    } catch (e) {
-      console.warn("Connexion Supabase en cours d'initialisation...", e);
-    }
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let isSignUpMode = false;
+    let currentUser = null;
 
     const modulesData = [
       { 
@@ -116,7 +159,7 @@
       { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée.", content: "Limitez les informations personnelles partagées publiquement sur les réseaux sociaux.", question: "Quel principe garantit le contrôle de vos données ?", options: ["RGPD / Confidentialité", "Open Source", "P2P", "Cookies"], answer: 0 },
       { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection.", content: "Un ransomware chiffre vos fichiers et exige une rançon. La seule vraie protection est une sauvegarde externe régulière.", question: "Que fait un Ransomware ?", options: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche des pubs", "Efface le navigateur"], answer: 1 },
       { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, permissions d'applications et sauvegardes.", content: "N'installez des applications que depuis les stores officiels (Play Store, App Store).", question: "D'où faut-il télécharger les applications ?", options: ["Sites web au hasard", "Stores officiels", "Forums", "E-mails reçus"], answer: 1 },
-      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
+      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
       { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez jamais de pièces jointes exécutables (.exe, .scr) provenant d'expéditeurs inconnus.", question: "Quel fichier est le plus dangereux à ouvrir ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
       { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité.", content: "La règle 3-2-1 : 3 copies de vos données, sur 2 supports différents, dont 1 hors site.", question: "Combien de copies recommande la règle 3-2-1 ?", options: ["1 copie", "2 copies", "3 copies", "5 copies"], answer: 2 },
       { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA.", content: "L'IA permet aux pirates de générer des e-mails parfaits sans fautes d'orthographe et des fausses voix (deepfakes audio).", question: "Comment vérifier une demande d'urgence vocale suspecte ?", options: ["Exécuter immédiatement", "Rappeler la personne par un autre canal", "Ignorer pour toujours", "Envoyer de l'argent"], answer: 1 },
@@ -127,6 +170,115 @@
     let selectedOption = null;
     let validatedModules = new Set();
 
+    // GESTION AUTHENTIFICATION
+    function basculerModeAuth() {
+      isSignUpMode = !isSignUpMode;
+      const title = document.getElementById('auth-title');
+      const subtitle = document.getElementById('auth-subtitle');
+      const btn = document.getElementById('auth-submit-btn');
+      const toggleText = document.getElementById('auth-toggle-text');
+
+      if (isSignUpMode) {
+        title.innerText = "Créer un compte";
+        subtitle.innerText = "Inscrivez-vous pour enregistrer votre progression en ligne.";
+        btn.innerText = "S'inscrire";
+        toggleText.innerHTML = 'Déjà un compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Se connecter</button>';
+      } else {
+        title.innerText = "Connexion à votre compte";
+        subtitle.innerText = "Connectez-vous pour accéder à vos 12 modules de formation.";
+        btn.innerText = "Se connecter";
+        toggleText.innerHTML = 'Pas encore de compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S\'inscrire</button>';
+      }
+    }
+
+    async function gererAuthentification(event) {
+      event.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const feedback = document.getElementById('auth-feedback');
+
+      feedback.innerText = "Traitement en cours...";
+      feedback.className = "mt-4 text-xs text-center font-medium text-amber-400";
+
+      if (isSignUpMode) {
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) {
+          feedback.innerText = "Erreur : " + error.message;
+          feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
+        } else {
+          feedback.innerText = "Compte créé ! Connexion en cours...";
+          feedback.className = "mt-4 text-xs text-center font-medium text-emerald-400";
+          setTimeout(() => initialiserSession(data.user), 1000);
+        }
+      } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          feedback.innerText = "Identifiants incorrects ou non validés.";
+          feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
+        } else {
+          initialiserSession(data.user);
+        }
+      }
+    }
+
+    async function initialiserSession(user) {
+      currentUser = user;
+      document.getElementById('user-email-display').innerText = user.email;
+      document.getElementById('view-auth').classList.add('hidden');
+      document.getElementById('user-profile-header').classList.remove('hidden');
+
+      // Charger la progression depuis Supabase
+      await chargerProgressionSupabase();
+      afficherListeModules();
+    }
+
+    async function deconnecterUtilisateur() {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      validatedModules.clear();
+      document.getElementById('view-auth').classList.remove('hidden');
+      document.getElementById('view-modules').classList.add('hidden');
+      document.getElementById('view-course').classList.add('hidden');
+      document.getElementById('user-profile-header').classList.add('hidden');
+    }
+
+    // BASE DE DONNÉES & PROGRESSION
+    async function chargerProgressionSupabase() {
+      if (!currentUser) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('user_progress')
+          .select('validated_modules')
+          .eq('user_ip', currentUser.id)
+          .maybeSingle();
+
+        if (data && data.validated_modules) {
+          validatedModules = new Set(data.validated_modules);
+        }
+      } catch (err) {
+        console.error("Erreur lors de la récupération de la progression :", err);
+      }
+    }
+
+    async function sauvegarderProgressionSupabase() {
+      if (!currentUser) return;
+      const modulesArray = Array.from(validatedModules);
+
+      try {
+        await supabaseClient
+          .from('user_progress')
+          .upsert({ 
+            user_ip: currentUser.id, 
+            validated_modules: modulesArray,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_ip' });
+      } catch (err) {
+        console.error("Erreur d'enregistrement Supabase :", err);
+      }
+    }
+
+    // VUES INTERFACE
     function afficherListeModules() {
       document.getElementById('view-modules').classList.remove('hidden');
       document.getElementById('view-course').classList.add('hidden');
@@ -199,21 +351,9 @@
 
       if (selectedOption === currentModule.answer) {
         validatedModules.add(currentModule.id);
-        const modulesArray = Array.from(validatedModules);
         
-        // 1. Sauvegarde locale dans le navigateur
-        localStorage.setItem('mrdex_progress', JSON.stringify(modulesArray));
-
-        // 2. Sauvegarde en temps réel dans Supabase
-        if (supabaseClient) {
-          try {
-            await supabaseClient
-              .from('user_progress')
-              .insert([{ user_ip: 'demo_user', validated_modules: modulesArray }]);
-          } catch (err) {
-            console.error("Erreur d'envoi à Supabase :", err);
-          }
-        }
+        // Sauvegarde dans Supabase pour cet utilisateur
+        await sauvegarderProgressionSupabase();
 
         feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
         feedback.className = "mt-3 text-xs text-center font-medium text-emerald-400";
@@ -224,17 +364,12 @@
       }
     }
 
-    // Chargement au démarrage
-    document.addEventListener('DOMContentLoaded', () => {
-      const savedProgress = localStorage.getItem('mrdex_progress');
-      if (savedProgress) {
-        try {
-          validatedModules = new Set(JSON.parse(savedProgress));
-        } catch (e) {
-          console.error("Erreur de lecture du localStorage", e);
-        }
+    // Vérifier si un utilisateur est déjà connecté au chargement de la page
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && session.user) {
+        initialiserSession(session.user);
       }
-      afficherListeModules();
     });
   </script>
 </body>
