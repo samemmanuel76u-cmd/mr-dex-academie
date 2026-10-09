@@ -24,6 +24,28 @@
       }
     }
   </script>
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #certificate-modal, #certificate-modal * {
+        visibility: visible;
+      }
+      #certificate-modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body class="h-full bg-slate-950 text-slate-100 font-sans antialiased flex flex-col justify-between">
 
@@ -36,9 +58,12 @@
       </div>
       
       <!-- Zone Profil / Déconnexion -->
-      <div id="user-profile-header" class="hidden flex items-center gap-4 text-sm">
+      <div id="user-profile-header" class="hidden flex items-center gap-3 text-sm">
         <span class="text-xs text-slate-400 hidden sm:inline">Connecté : <strong id="user-email-display" class="text-slate-200"></strong></span>
         <span>Progression : <strong id="progress-text" class="text-emerald-400">0/12</strong></span>
+        <button id="cert-header-btn" onclick="ouvrirCertificat()" class="hidden px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold rounded border border-amber-500/30 transition flex items-center gap-1">
+          🎓 Certificat
+        </button>
         <button onclick="deconnecterUtilisateur()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-semibold rounded border border-slate-700 transition">
           Déconnexion
         </button>
@@ -84,6 +109,18 @@
 
     <!-- VUE LISTE DES MODULES (Visible après connexion) -->
     <div id="view-modules" class="hidden">
+      <!-- Bannière d'obtenton du Certificat -->
+      <div id="cert-banner" class="hidden mb-8 p-6 bg-gradient-to-r from-amber-950/40 via-emerald-950/40 to-slate-900 border border-amber-500/40 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Félicitations !</span>
+          <h3 class="text-xl font-bold text-slate-100 mt-1">Vous avez validé les 12 modules de formation</h3>
+          <p class="text-xs text-slate-300 mt-1">Votre certification officielle en Cybersécurité Mr. DEX Académie est disponible.</p>
+        </div>
+        <button onclick="ouvrirCertificat()" class="px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg whitespace-nowrap">
+          🎓 Afficher mon Certificat
+        </button>
+      </div>
+
       <div class="mb-8">
         <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
         <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage en cybersécurité.</p>
@@ -117,6 +154,54 @@
           Valider le Quiz & Continuer
         </button>
         <p id="quiz-feedback" class="mt-3 text-xs text-center font-medium"></p>
+      </div>
+    </div>
+
+    <!-- MODAL DU CERTIFICAT -->
+    <div id="certificate-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div class="relative w-full max-w-3xl bg-slate-900 border-2 border-amber-500/50 rounded-2xl p-8 shadow-2xl text-center">
+        
+        <!-- Bouton Fermer -->
+        <button onclick="fermerCertificat()" class="no-print absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold p-2">✕</button>
+
+        <!-- Filigrane & Bordure Diplôme -->
+        <div class="border-4 border-double border-amber-500/30 p-8 rounded-xl bg-slate-950/60">
+          <div class="flex justify-center items-center gap-2 mb-4">
+            <span class="px-3 py-1 bg-amber-500/10 text-amber-400 font-bold rounded border border-amber-500/30 text-sm">MR. DEX ACADÉMIE</span>
+          </div>
+
+          <h1 class="text-3xl md:text-4xl font-serif font-bold text-amber-400 tracking-wide mb-2">CERTIFICAT DE RÉUSSITE</h1>
+          <p class="text-xs text-slate-400 uppercase tracking-widest mb-6">Spécialisation en Cybersécurité & Hygiène Numérique</p>
+
+          <p class="text-sm text-slate-300 italic mb-2">Le présent certificat est décerné à :</p>
+          <h2 id="cert-user-email" class="text-2xl md:text-3xl font-bold text-slate-100 underline decoration-amber-500/50 underline-offset-8 mb-6"></h2>
+
+          <p class="text-xs md:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed mb-8">
+            Pour avoir suivi et validé avec succès l'ensemble des <strong>12 modules de formation</strong> de la plateforme Mr. DEX Académie, démontrant la maîtrise des compétences clés en sécurité informatique, prévention du phishing et protection des données.
+          </p>
+
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-6 pt-6 border-t border-slate-800 text-xs text-slate-400">
+            <div>
+              <p class="font-semibold text-slate-300">Date de délivrance</p>
+              <p id="cert-date" class="text-emerald-400 font-mono mt-1"></p>
+            </div>
+            <div>
+              <div class="font-serif text-amber-400 text-lg font-bold italic mb-1">Mr. DEX</div>
+              <p class="text-slate-400 text-[10px] uppercase">Direction Pédagogique</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Imprimer / Télécharger -->
+        <div class="no-print mt-6 flex justify-center gap-4">
+          <button onclick="window.print()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition shadow-md">
+            🖨️ Imprimer / Sauvegarder en PDF
+          </button>
+          <button onclick="fermerCertificat()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-lg transition">
+            Fermer
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -227,7 +312,6 @@
       document.getElementById('view-auth').classList.add('hidden');
       document.getElementById('user-profile-header').classList.remove('hidden');
 
-      // Charger la progression depuis Supabase
       await chargerProgressionSupabase();
       afficherListeModules();
     }
@@ -309,7 +393,17 @@
         container.appendChild(card);
       });
 
-      document.getElementById('progress-text').innerText = `${validatedModules.size}/12`;
+      const count = validatedModules.size;
+      document.getElementById('progress-text').innerText = `${count}/12`;
+
+      // Gestion affichage du Certificat
+      if (count === 12) {
+        document.getElementById('cert-banner').classList.remove('hidden');
+        document.getElementById('cert-header-btn').classList.remove('hidden');
+      } else {
+        document.getElementById('cert-banner').classList.add('hidden');
+        document.getElementById('cert-header-btn').classList.add('hidden');
+      }
     }
 
     function ouvrirModule(id) {
@@ -352,7 +446,6 @@
       if (selectedOption === currentModule.answer) {
         validatedModules.add(currentModule.id);
         
-        // Sauvegarde dans Supabase pour cet utilisateur
         await sauvegarderProgressionSupabase();
 
         feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
@@ -364,7 +457,26 @@
       }
     }
 
-    // Vérifier si un utilisateur est déjà connecté au chargement de la page
+    // GESTION DU CERTIFICAT
+    function ouvrirCertificat() {
+      if (!currentUser) return;
+      document.getElementById('cert-user-email').innerText = currentUser.email;
+      
+      const aujourdhui = new Date().toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      document.getElementById('cert-date').innerText = aujourdhui;
+
+      document.getElementById('certificate-modal').classList.remove('hidden');
+    }
+
+    function fermerCertificat() {
+      document.getElementById('certificate-modal').classList.add('hidden');
+    }
+
+    // Démarrage
     document.addEventListener('DOMContentLoaded', async () => {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session && session.user) {
