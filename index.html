@@ -176,12 +176,37 @@
     }
 
     function validerQuiz() {
-      const feedback = document.getElementById('quiz-feedback');
-      if (selectedOption === null) {
-        feedback.innerText = "Veuillez sélectionner une réponse.";
-        feedback.className = "mt-3 text-xs text-center font-medium text-amber-400";
-        return;
-      }
+  const feedback = document.getElementById('quiz-feedback');
+  if (selectedOption === null) {
+    feedback.innerText = "Veuillez sélectionner une réponse.";
+    feedback.className = "mt-3 text-xs text-center font-medium text-amber-400";
+    return;
+  }
+
+  if (selectedOption === currentModule.answer) {
+    validatedModules.add(currentModule.id);
+    
+    // Sauvegarde automatique de la progression dans le navigateur
+    localStorage.setItem('mrdex_progress', JSON.stringify(Array.from(validatedModules)));
+
+    feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
+    feedback.className = "mt-3 text-xs text-center font-medium text-emerald-400";
+    setTimeout(afficherListeModules, 1500);
+  } else {
+    feedback.innerText = "Mauvaise réponse. Réessayez !";
+    feedback.className = "mt-3 text-xs text-center font-medium text-rose-400";
+  }
+}
+
+// Chargement automatique au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+  const savedProgress = localStorage.getItem('mrdex_progress');
+  if (savedProgress) {
+    validatedModules = new Set(JSON.parse(savedProgress));
+  }
+  afficherListeModules();
+});
+
 
       if (selectedOption === currentModule.answer) {
         validatedModules.add(currentModule.id);
