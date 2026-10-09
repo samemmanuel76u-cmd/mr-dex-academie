@@ -79,7 +79,7 @@
   </main>
 
   <script>
-    // Initialisation sécurisée du client Supabase
+    // Configuration Supabase avec vos identifiants
     const SUPABASE_URL = "https://qfjrtmexoivkhtkyexsb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_pmQuZLo-g4gfS7rdLUmPOw_pzQwRQK7";
     
@@ -89,7 +89,7 @@
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       }
     } catch (e) {
-      console.warn("Supabase non connecté :", e);
+      console.warn("Connexion Supabase en cours d'initialisation...", e);
     }
 
     const modulesData = [
@@ -201,17 +201,17 @@
         validatedModules.add(currentModule.id);
         const modulesArray = Array.from(validatedModules);
         
-        // 1. Sauvegarde locale immédiate
+        // 1. Sauvegarde locale dans le navigateur
         localStorage.setItem('mrdex_progress', JSON.stringify(modulesArray));
 
-        // 2. Tentative de sauvegarde Supabase
+        // 2. Sauvegarde en temps réel dans Supabase
         if (supabaseClient) {
           try {
             await supabaseClient
               .from('user_progress')
               .insert([{ user_ip: 'demo_user', validated_modules: modulesArray }]);
           } catch (err) {
-            console.error("Erreur de synchronisation Supabase :", err);
+            console.error("Erreur d'envoi à Supabase :", err);
           }
         }
 
