@@ -79,10 +79,18 @@
   </main>
 
   <script>
-    // Initialisation du client Supabase
+    // Initialisation sécurisée du client Supabase
     const SUPABASE_URL = "https://qfjrtmexoivkhtkyexsb.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_pmQuZLo-g4gfS7rdLUmPOw_pzQwRQK7";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_KEY = "sb_publishable_pmQuZLo-g4gfS7rdLUmPOw_pzQwRQK7";
+    
+    let supabaseClient = null;
+    try {
+      if (window.supabase && window.supabase.createClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (e) {
+      console.warn("Supabase non connecté :", e);
+    }
 
     const modulesData = [
       { 
@@ -109,7 +117,7 @@
       { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection.", content: "Un ransomware chiffre vos fichiers et exige une rançon. La seule vraie protection est une sauvegarde externe régulière.", question: "Que fait un Ransomware ?", options: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche des pubs", "Efface le navigateur"], answer: 1 },
       { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, permissions d'applications et sauvegardes.", content: "N'installez des applications que depuis les stores officiels (Play Store, App Store).", question: "D'où faut-il télécharger les applications ?", options: ["Sites web au hasard", "Stores officiels", "Forums", "E-mails reçus"], answer: 1 },
       { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
-      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez jamais de pièces jointes exécutables (.exe, .scr) provenant d'expéditeurs inconnus.", question: "Quel fichier est le plus dangerous à ouvrir ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
+      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez jamais de pièces jointes exécutables (.exe, .scr) provenant d'expéditeurs inconnus.", question: "Quel fichier est le plus dangereux à ouvrir ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
       { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité.", content: "La règle 3-2-1 : 3 copies de vos données, sur 2 supports différents, dont 1 hors site.", question: "Combien de copies recommande la règle 3-2-1 ?", options: ["1 copie", "2 copies", "3 copies", "5 copies"], answer: 2 },
       { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA.", content: "L'IA permet aux pirates de générer des e-mails parfaits sans fautes d'orthographe et des fausses voix (deepfakes audio).", question: "Comment vérifier une demande d'urgence vocale suspecte ?", options: ["Exécuter immédiatement", "Rappeler la personne par un autre canal", "Ignorer pour toujours", "Envoyer de l'argent"], answer: 1 },
       { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant les 11 modules précédents.", content: "Félicitations pour votre parcours ! La cybersécurité est une vigilance de tous les jours.", question: "Quelle est la meilleure défense en cybersécurité ?", options: ["Un seul mot de passe partout", "La vigilance constante de l'utilisateur", "Ne plus utiliser Internet", "Désactiver les mises à jour"], answer: 1 }
@@ -124,6 +132,7 @@
       document.getElementById('view-course').classList.add('hidden');
       
       const container = document.getElementById('modules-list');
+      if (!container) return;
       container.innerHTML = '';
 
       modulesData.forEach((mod) => {
@@ -177,4 +186,56 @@
       });
 
       document.getElementById('view-modules').classList.add('hidden');
-      document
+      document.getElementById('view-course').classList.remove('hidden');
+    }
+
+    async function validerQuiz() {
+      const feedback = document.getElementById('quiz-feedback');
+      if (selectedOption === null) {
+        feedback.innerText = "Veuillez sélectionner une réponse.";
+        feedback.className = "mt-3 text-xs text-center font-medium text-amber-400";
+        return;
+      }
+
+      if (selectedOption === currentModule.answer) {
+        validatedModules.add(currentModule.id);
+        const modulesArray = Array.from(validatedModules);
+        
+        // 1. Sauvegarde locale immédiate
+        localStorage.setItem('mrdex_progress', JSON.stringify(modulesArray));
+
+        // 2. Tentative de sauvegarde Supabase
+        if (supabaseClient) {
+          try {
+            await supabaseClient
+              .from('user_progress')
+              .insert([{ user_ip: 'demo_user', validated_modules: modulesArray }]);
+          } catch (err) {
+            console.error("Erreur de synchronisation Supabase :", err);
+          }
+        }
+
+        feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
+        feedback.className = "mt-3 text-xs text-center font-medium text-emerald-400";
+        setTimeout(afficherListeModules, 1500);
+      } else {
+        feedback.innerText = "Mauvaise réponse. Réessayez !";
+        feedback.className = "mt-3 text-xs text-center font-medium text-rose-400";
+      }
+    }
+
+    // Chargement au démarrage
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedProgress = localStorage.getItem('mrdex_progress');
+      if (savedProgress) {
+        try {
+          validatedModules = new Set(JSON.parse(savedProgress));
+        } catch (e) {
+          console.error("Erreur de lecture du localStorage", e);
+        }
+      }
+      afficherListeModules();
+    });
+  </script>
+</body>
+</html>
