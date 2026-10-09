@@ -26,24 +26,13 @@
   </script>
   <style>
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      #certificate-modal, #certificate-modal * {
-        visibility: visible;
-      }
+      body * { visibility: hidden; }
+      #certificate-modal, #certificate-modal * { visibility: visible; }
       #certificate-modal {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: white !important;
-        color: black !important;
+        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+        background: white !important; color: black !important;
       }
-      .no-print {
-        display: none !important;
-      }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
@@ -52,15 +41,16 @@
   <!-- En-tête -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-2 cursor-pointer" onclick="afficherListeModules()">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="naviguerVers('modules')">
         <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded border border-emerald-500/20 text-sm">DEX</span>
         <h1 class="font-bold text-lg text-slate-100">Mr. DEX Académie</h1>
       </div>
       
-      <!-- Zone Profil / Déconnexion -->
+      <!-- Zone Profil / Navigation -->
       <div id="user-profile-header" class="hidden flex items-center gap-3 text-sm">
-        <span class="text-xs text-slate-400 hidden sm:inline">Connecté : <strong id="user-email-display" class="text-slate-200"></strong></span>
-        <span>Progression : <strong id="progress-text" class="text-emerald-400">0/12</strong></span>
+        <button onclick="naviguerVers('dashboard')" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded border border-slate-700 transition">
+          📊 Tableau de bord
+        </button>
         <button id="cert-header-btn" onclick="ouvrirCertificat()" class="hidden px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold rounded border border-amber-500/30 transition flex items-center gap-1">
           🎓 Certificat
         </button>
@@ -78,7 +68,7 @@
       <div class="text-center mb-6">
         <span class="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded-full text-xs border border-emerald-500/20 mb-3">Accès Académie</span>
         <h2 id="auth-title" class="text-2xl font-bold text-slate-100">Connexion à votre compte</h2>
-        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Connectez-vous pour accéder à vos 12 modules de formation.</p>
+        <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Connectez-vous pour accéder à votre espace de formation.</p>
       </div>
 
       <form id="auth-form" onsubmit="gererAuthentification(event)" class="space-y-4">
@@ -107,9 +97,65 @@
       </div>
     </div>
 
-    <!-- VUE LISTE DES MODULES (Visible après connexion) -->
+    <!-- VUE TABLEAU DE BORD UTILISATEUR -->
+    <div id="view-dashboard" class="hidden max-w-4xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-100">Tableau de Bord</h2>
+          <p class="text-xs text-slate-400 mt-1">Suivi détaillé de votre apprentissage en cybersécurité.</p>
+        </div>
+        <button onclick="naviguerVers('modules')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition">
+          Continuer la formation →
+        </button>
+      </div>
+
+      <!-- Carte Infos Utilisateur & Progression -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 border border-slate-800 bg-slate-900 rounded-2xl md:col-span-1">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Profil Apprenant</span>
+          <p id="dash-email" class="text-sm font-bold text-slate-100 mt-2 truncate"></p>
+          <p id="dash-date" class="text-xs text-slate-500 mt-1"></p>
+          
+          <div class="mt-6 pt-6 border-t border-slate-800">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Statut Général</span>
+            <div class="mt-2 text-2xl font-black text-emerald-400" id="dash-percent">0%</div>
+            <p class="text-xs text-slate-400 mt-1" id="dash-count-text">0 / 12 modules validés</p>
+          </div>
+        </div>
+
+        <div class="p-6 border border-slate-800 bg-slate-900 rounded-2xl md:col-span-2 flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-slate-200 mb-2">Avancement global</h3>
+            <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800">
+              <div id="dash-progress-bar" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+              Pour obtenir votre certification finale, vous devez réussir 100% des quiz associés aux 12 modules.
+            </p>
+          </div>
+
+          <div id="dash-cert-box" class="hidden mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold text-amber-400">Certificat Débloqué !</p>
+              <p class="text-[11px] text-slate-300">Votre diplôme est prêt à être imprimé.</p>
+            </div>
+            <button onclick="ouvrirCertificat()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg hover:bg-amber-400 transition">
+              Afficher
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Détail par Module -->
+      <div class="p-6 border border-slate-800 bg-slate-900 rounded-2xl">
+        <h3 class="text-sm font-bold text-slate-200 mb-4">Détail des Modules</h3>
+        <div id="dash-modules-list" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- VUE LISTE DES MODULES -->
     <div id="view-modules" class="hidden">
-      <!-- Bannière d'obtenton du Certificat -->
+      <!-- Bannière Certificat -->
       <div id="cert-banner" class="hidden mb-8 p-6 bg-gradient-to-r from-amber-950/40 via-emerald-950/40 to-slate-900 border border-amber-500/40 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Félicitations !</span>
@@ -123,48 +169,74 @@
 
       <div class="mb-8">
         <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
-        <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage en cybersécurité.</p>
+        <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage.</p>
       </div>
       <div id="modules-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
-    <!-- VUE COURS ET QUIZ -->
+    <!-- VUE LECTURE DE COURS -->
     <div id="view-course" class="hidden max-w-3xl mx-auto">
-      <button onclick="afficherListeModules()" class="mb-6 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-2">
+      <button onclick="naviguerVers('modules')" class="mb-6 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-2">
         ← Retour au programme
       </button>
 
       <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl mb-6">
-        <span id="course-badge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
-          Module 1/12
-        </span>
-        <h2 id="course-title" class="text-2xl font-bold text-slate-100 mt-3 mb-2"></h2>
-        <p id="course-content" class="text-sm text-slate-300 leading-relaxed"></p>
-      </div>
-
-      <!-- Quiz -->
-      <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl">
-        <h3 class="text-lg font-bold text-slate-100 mb-1">Quiz de Validation (100% Requis)</h3>
-        <p class="text-xs text-slate-400 mb-4">Répondez correctement à la question pour valider ce module.</p>
+        <div class="flex items-center justify-between mb-3">
+          <span id="course-badge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
+            Module 1/12
+          </span>
+          <span class="text-xs text-slate-400 font-medium">Étape 1/2 : Leçon</span>
+        </div>
         
-        <p id="quiz-question" class="text-sm font-semibold text-slate-200 mb-3"></p>
-        <div id="quiz-options" class="space-y-2 mb-4"></div>
+        <h2 id="course-title" class="text-2xl font-bold text-slate-100 mb-4"></h2>
+        
+        <!-- Message d'avertissement en cas de réorientation après échec -->
+        <div id="course-alert" class="hidden mb-4 p-3 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs rounded-lg">
+          ⚠️ <strong>Attention :</strong> Vous avez échoué au quiz. Veuillez relire attentivement la leçon avant de retenter le quiz.
+        </div>
+
+        <p id="course-content" class="text-sm text-slate-300 leading-relaxed space-y-4"></p>
+
+        <div class="mt-8 pt-6 border-t border-slate-800 text-right">
+          <button onclick="passerAuQuiz()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
+            Passer au Quiz de validation →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE QUIZ ISOLÉ (Le cours est totalement masqué ici) -->
+    <div id="view-quiz" class="hidden max-w-2xl mx-auto">
+      <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl">
+        <div class="flex items-center justify-between mb-4">
+          <span id="quiz-badge" class="text-xs font-semibold px-2.5 py-1 bg-amber-500/10 text-amber-400 rounded border border-amber-500/30">
+            Quiz de Validation
+          </span>
+          <span class="text-xs text-slate-400 font-medium">Étape 2/2 : Évaluation</span>
+        </div>
+
+        <h3 id="quiz-module-title" class="text-lg font-bold text-slate-100 mb-1"></h3>
+        <p class="text-xs text-slate-400 mb-6">Répondez correctement pour valider définitivement ce module (aucun document autorisé).</p>
+        
+        <div class="p-4 bg-slate-950 border border-slate-800 rounded-lg mb-6">
+          <p id="quiz-question" class="text-sm font-semibold text-slate-100"></p>
+        </div>
+
+        <div id="quiz-options" class="space-y-3 mb-6"></div>
 
         <button onclick="validerQuiz()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
-          Valider le Quiz & Continuer
+          Soumettre ma réponse
         </button>
-        <p id="quiz-feedback" class="mt-3 text-xs text-center font-medium"></p>
+        
+        <p id="quiz-feedback" class="mt-4 text-xs text-center font-medium"></p>
       </div>
     </div>
 
     <!-- MODAL DU CERTIFICAT -->
     <div id="certificate-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div class="relative w-full max-w-3xl bg-slate-900 border-2 border-amber-500/50 rounded-2xl p-8 shadow-2xl text-center">
-        
-        <!-- Bouton Fermer -->
         <button onclick="fermerCertificat()" class="no-print absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold p-2">✕</button>
 
-        <!-- Filigrane & Bordure Diplôme -->
         <div class="border-4 border-double border-amber-500/30 p-8 rounded-xl bg-slate-950/60">
           <div class="flex justify-center items-center gap-2 mb-4">
             <span class="px-3 py-1 bg-amber-500/10 text-amber-400 font-bold rounded border border-amber-500/30 text-sm">MR. DEX ACADÉMIE</span>
@@ -192,7 +264,6 @@
           </div>
         </div>
 
-        <!-- Action Imprimer / Télécharger -->
         <div class="no-print mt-6 flex justify-center gap-4">
           <button onclick="window.print()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition shadow-md">
             🖨️ Imprimer / Sauvegarder en PDF
@@ -201,7 +272,6 @@
             Fermer
           </button>
         </div>
-
       </div>
     </div>
 
@@ -212,20 +282,22 @@
   </footer>
 
   <script>
-    // Config Supabase
     const SUPABASE_URL = "https://qfjrtmexoivkhtkyexsb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_pmQuZLo-g4gfS7rdLUmPOw_pzQwRQK7";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let isSignUpMode = false;
     let currentUser = null;
+    let currentModule = null;
+    let selectedOption = null;
+    let validatedModules = new Set();
 
     const modulesData = [
       { 
         id: 1, 
         title: "Module 1 : Introduction à la Cybersécurité", 
         desc: "Les bases de la sécurité, la triade CIA et les types de menaces.",
-        content: "Bienvenue dans le Module 1 ! Pour sécuriser vos données, retenez la Triade CIA : Confidentialité (accès réservé), Intégrité (données non altérées), et Disponibilité (services toujours accessibles).",
+        content: "Bienvenue dans le Module 1 ! Pour sécuriser vos données, retenez la Triade CIA : Confidentialité (accès réservé aux seules personnes autorisées), Intégrité (garantie que les données ne sont pas altérées), et Disponibilité (services toujours accessibles en cas de besoin).",
         question: "Que signifie le 'C' dans le modèle CIA ?",
         options: ["Calcul", "Confidentialité", "Contrôle", "Cyber"],
         answer: 1
@@ -234,52 +306,60 @@
         id: 2, 
         title: "Module 2 : Ingénierie Sociale & Phishing", 
         desc: "Identifier les tentatives d'hameçonnage et la manipulation psychologique.",
-        content: "Le phishing (hameçonnage) utilise l'urgence ou la peur pour vous inciter à cliquer sur des liens malveillants ou à fournir vos identifiants.",
+        content: "Le phishing (hameçonnage) utilise l'urgence ou la peur pour vous inciter à cliquer sur des liens malveillants ou à fournir vos identifiants confidentiels. Observez toujours avec soin l'adresse e-mail de l'expéditeur.",
         question: "Quel est le principal signal d'alerte d'un e-mail suspect ?",
-        options: ["Une formule de politesse", "Une demande urgente avec lien externe", "Une pièce jointe PDF", "Un logo de l'entreprise"],
+        options: ["Une formule de politesse classique", "Une demande urgente avec lien externe", "Une pièce jointe au format PDF", "Le logo officiel de l'entreprise"],
         answer: 1
       },
-      { id: 3, title: "Module 3 : Gestion des Mots de Passe & MFA", desc: "Création de mots de passe forts et authentification à deux facteurs.", content: "Utilisez un gestionnaire de mots de passe et activez toujours la double authentification (MFA).", question: "Qu'est-ce que le MFA ?", options: ["Master File Access", "Authentification Multi-Facteurs", "Main Frame Analysis", "Mode Fast Action"], answer: 1 },
-      { id: 4, title: "Module 4 : Sécurité du Réseau & Wi-Fi", desc: "Protéger ses connexions, utiliser un VPN et éviter les Wi-Fi publics.", content: "Les réseaux Wi-Fi publics non sécurisés permettent l'interception de données. Utilisez un VPN sur les réseaux inconnus.", question: "Que fait un VPN ?", options: ["Nettoie le disque dur", "Chiffre votre trafic internet", "Augmente le Wi-Fi", "Bloque les virus"], answer: 1 },
-      { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée.", content: "Limitez les informations personnelles partagées publiquement sur les réseaux sociaux.", question: "Quel principe garantit le contrôle de vos données ?", options: ["RGPD / Confidentialité", "Open Source", "P2P", "Cookies"], answer: 0 },
-      { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection.", content: "Un ransomware chiffre vos fichiers et exige une rançon. La seule vraie protection est une sauvegarde externe régulière.", question: "Que fait un Ransomware ?", options: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche des pubs", "Efface le navigateur"], answer: 1 },
-      { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, permissions d'applications et sauvegardes.", content: "N'installez des applications que depuis les stores officiels (Play Store, App Store).", question: "D'où faut-il télécharger les applications ?", options: ["Sites web au hasard", "Stores officiels", "Forums", "E-mails reçus"], answer: 1 },
-      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
-      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez jamais de pièces jointes exécutables (.exe, .scr) provenant d'expéditeurs inconnus.", question: "Quel fichier est le plus dangereux à ouvrir ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
-      { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité.", content: "La règle 3-2-1 : 3 copies de vos données, sur 2 supports différents, dont 1 hors site.", question: "Combien de copies recommande la règle 3-2-1 ?", options: ["1 copie", "2 copies", "3 copies", "5 copies"], answer: 2 },
-      { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA.", content: "L'IA permet aux pirates de générer des e-mails parfaits sans fautes d'orthographe et des fausses voix (deepfakes audio).", question: "Comment vérifier une demande d'urgence vocale suspecte ?", options: ["Exécuter immédiatement", "Rappeler la personne par un autre canal", "Ignorer pour toujours", "Envoyer de l'argent"], answer: 1 },
-      { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant les 11 modules précédents.", content: "Félicitations pour votre parcours ! La cybersécurité est une vigilance de tous les jours.", question: "Quelle est la meilleure défense en cybersécurité ?", options: ["Un seul mot de passe partout", "La vigilance constante de l'utilisateur", "Ne plus utiliser Internet", "Désactiver les mises à jour"], answer: 1 }
+      { id: 3, title: "Module 3 : Gestion des Mots de Passe & MFA", desc: "Création de mots de passe forts et authentification à deux facteurs.", content: "Utilisez un gestionnaire de mots de passe pour générer des mots de passe uniques et complexes. Activez systématiquement la double authentification (MFA).", question: "Qu'est-ce que le MFA ?", options: ["Master File Access", "Authentification Multi-Facteurs", "Main Frame Analysis", "Mode Fast Action"], answer: 1 },
+      { id: 4, title: "Module 4 : Sécurité du Réseau & Wi-Fi", desc: "Protéger ses connexions, utiliser un VPN et éviter les Wi-Fi publics.", content: "Les réseaux Wi-Fi publics non sécurisés permettent l'interception facile de données. Utilisez un VPN sur tous les réseaux inconnus pour chiffrer vos communications.", question: "Que fait un VPN ?", options: ["Nettoie le disque dur", "Chiffre votre trafic internet", "Augmente le signal Wi-Fi", "Bloque les virus informatique"], answer: 1 },
+      { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée.", content: "Limitez les informations personnelles partagées publiquement sur Internet et les réseaux sociaux afin d'éviter l'usurpation d'identité.", question: "Quel principe garantit le contrôle de vos données ?", options: ["RGPD / Confidentialité", "Open Source", "P2P", "Cookies web"], answer: 0 },
+      { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection.", content: "Un ransomware chiffre vos fichiers et exige une rançon. La seule véritable protection réside dans des sauvegardes régulières et isolées.", question: "Que fait un Ransomware ?", options: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche uniquement des publicités", "Efface l'historique web"], answer: 1 },
+      { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, permissions d'applications et sauvegardes.", content: "Installez exclusivement des applications provenant des magasins officiels (Google Play Store, App Store) et vérifiez les autorisations demandées.", question: "D'où faut-il télécharger les applications ?", options: ["Sites web au hasard", "Stores officiels", "Forums de discussion", "E-mails reçus"], answer: 1 },
+      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse avant de saisir des informations sensibles.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
+      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez et ne lancez jamais de pièces jointes exécutables (.exe, .scr) reçues d'expéditeurs inconnus.", question: "Quel fichier est le plus dangereux à exécuter ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
+      { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité.", content: "La règle 3-2-1 : conserver au moins 3 copies de vos données, sur 2 supports différents, dont 1 copie stockée hors site.", question: "Combien de copies recommande la règle 3-2-1 ?", options: ["1 copie", "2 copies", "3 copies", "5 copies"], answer: 2 },
+      { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA.", content: "L'Intelligence Artificielle permet la création d'e-mails d'hameçonnage parfaits et d'imitation vocale (deepfake audio). Vérifiez toujours par un autre canal de communication.", question: "Comment vérifier une demande d'urgence vocale suspecte ?", options: ["Exécuter immédiatement la demande", "Rappeler la personne par un autre canal vérifié", "Ignorer pour toujours", "Envoyer de l'argent"], answer: 1 },
+      { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant l'ensemble des principes.", content: "Félicitations pour votre parcours académique ! La cybersécurité requiert une vigilance constante au quotidien.", question: "Quelle est la meilleure défense globale en cybersécurité ?", options: ["Un seul mot de passe court partout", "La vigilance constante de l'utilisateur", "Ne plus utiliser Internet", "Désactiver les mises à jour"], answer: 1 }
     ];
 
-    let currentModule = null;
-    let selectedOption = null;
-    let validatedModules = new Set();
+    // NAVIGATION ENTRE LES VUES
+    function naviguerVers(vue) {
+      document.getElementById('view-auth').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('view-modules').classList.add('hidden');
+      document.getElementById('view-course').classList.add('hidden');
+      document.getElementById('view-quiz').classList.add('hidden');
 
-    // GESTION AUTHENTIFICATION
+      if (vue === 'auth') document.getElementById('view-auth').classList.remove('hidden');
+      if (vue === 'dashboard') {
+        mettreAJourDashboard();
+        document.getElementById('view-dashboard').classList.remove('hidden');
+      }
+      if (vue === 'modules') {
+        afficherListeModules();
+        document.getElementById('view-modules').classList.remove('hidden');
+      }
+      if (vue === 'course') document.getElementById('view-course').classList.remove('hidden');
+      if (vue === 'quiz') document.getElementById('view-quiz').classList.remove('hidden');
+    }
+
+    // AUTHENTIFICATION
     function basculerModeAuth() {
       isSignUpMode = !isSignUpMode;
-      const title = document.getElementById('auth-title');
-      const subtitle = document.getElementById('auth-subtitle');
-      const btn = document.getElementById('auth-submit-btn');
-      const toggleText = document.getElementById('auth-toggle-text');
-
-      if (isSignUpMode) {
-        title.innerText = "Créer un compte";
-        subtitle.innerText = "Inscrivez-vous pour enregistrer votre progression en ligne.";
-        btn.innerText = "S'inscrire";
-        toggleText.innerHTML = 'Déjà un compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Se connecter</button>';
-      } else {
-        title.innerText = "Connexion à votre compte";
-        subtitle.innerText = "Connectez-vous pour accéder à vos 12 modules de formation.";
-        btn.innerText = "Se connecter";
-        toggleText.innerHTML = 'Pas encore de compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S\'inscrire</button>';
-      }
+      document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte" : "Connexion à votre compte";
+      document.getElementById('auth-subtitle').innerText = isSignUpMode ? "Inscrivez-vous pour enregistrer votre progression en ligne." : "Connectez-vous pour accéder à votre espace de formation.";
+      document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
+      document.getElementById('auth-toggle-text').innerHTML = isSignUpMode ? 
+        'Déjà un compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Se connecter</button>' : 
+        'Pas encore de compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S\'inscrire</button>';
+      document.getElementById('auth-feedback').innerText = '';
     }
 
     async function gererAuthentification(event) {
       event.preventDefault();
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-password').value;
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value.trim();
       const feedback = document.getElementById('auth-feedback');
 
       feedback.innerText = "Traitement en cours...";
@@ -288,17 +368,17 @@
       if (isSignUpMode) {
         const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) {
-          feedback.innerText = "Erreur : " + error.message;
+          feedback.innerText = "Erreur d'inscription : " + error.message;
           feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
         } else {
-          feedback.innerText = "Compte créé ! Connexion en cours...";
+          feedback.innerText = "Inscription réussie ! Connexion automatique...";
           feedback.className = "mt-4 text-xs text-center font-medium text-emerald-400";
           setTimeout(() => initialiserSession(data.user), 1000);
         }
       } else {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
-          feedback.innerText = "Identifiants incorrects ou non validés.";
+          feedback.innerText = "E-mail ou mot de passe incorrect.";
           feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
         } else {
           initialiserSession(data.user);
@@ -308,30 +388,25 @@
 
     async function initialiserSession(user) {
       currentUser = user;
-      document.getElementById('user-email-display').innerText = user.email;
-      document.getElementById('view-auth').classList.add('hidden');
       document.getElementById('user-profile-header').classList.remove('hidden');
 
       await chargerProgressionSupabase();
-      afficherListeModules();
+      naviguerVers('modules');
     }
 
     async function deconnecterUtilisateur() {
       await supabaseClient.auth.signOut();
       currentUser = null;
       validatedModules.clear();
-      document.getElementById('view-auth').classList.remove('hidden');
-      document.getElementById('view-modules').classList.add('hidden');
-      document.getElementById('view-course').classList.add('hidden');
       document.getElementById('user-profile-header').classList.add('hidden');
+      naviguerVers('auth');
     }
 
-    // BASE DE DONNÉES & PROGRESSION
+    // BASE DE DONNÉES SUPABASE
     async function chargerProgressionSupabase() {
       if (!currentUser) return;
-
       try {
-        const { data, error } = await supabaseClient
+        const { data } = await supabaseClient
           .from('user_progress')
           .select('validated_modules')
           .eq('user_ip', currentUser.id)
@@ -341,14 +416,13 @@
           validatedModules = new Set(data.validated_modules);
         }
       } catch (err) {
-        console.error("Erreur lors de la récupération de la progression :", err);
+        console.error("Erreur Supabase :", err);
       }
     }
 
     async function sauvegarderProgressionSupabase() {
       if (!currentUser) return;
       const modulesArray = Array.from(validatedModules);
-
       try {
         await supabaseClient
           .from('user_progress')
@@ -358,15 +432,12 @@
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_ip' });
       } catch (err) {
-        console.error("Erreur d'enregistrement Supabase :", err);
+        console.error("Erreur de sauvegarde :", err);
       }
     }
 
-    // VUES INTERFACE
+    // LISTE DES MODULES & COURS
     function afficherListeModules() {
-      document.getElementById('view-modules').classList.remove('hidden');
-      document.getElementById('view-course').classList.add('hidden');
-      
       const container = document.getElementById('modules-list');
       if (!container) return;
       container.innerHTML = '';
@@ -386,17 +457,14 @@
             <h3 class="text-lg font-bold text-slate-100 mb-2">${mod.title}</h3>
             <p class="text-xs text-slate-400 leading-relaxed mb-4">${mod.desc}</p>
           </div>
-          <button onclick="ouvrirModule(${mod.id})" class="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors mt-auto">
-            ${isValidated ? 'Revoir le cours' : 'Accéder au cours'}
+          <button onclick="ouvrirCourse(${mod.id})" class="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors mt-auto">
+            ${isValidated ? 'Revoir la leçon' : 'Commencer le module'}
           </button>
         `;
         container.appendChild(card);
       });
 
       const count = validatedModules.size;
-      document.getElementById('progress-text').innerText = `${count}/12`;
-
-      // Gestion affichage du Certificat
       if (count === 12) {
         document.getElementById('cert-banner').classList.remove('hidden');
         document.getElementById('cert-header-btn').classList.remove('hidden');
@@ -406,13 +474,25 @@
       }
     }
 
-    function ouvrirModule(id) {
+    function ouvrirCourse(id, echec = false) {
       currentModule = modulesData.find(m => m.id === id);
-      selectedOption = null;
-
       document.getElementById('course-badge').innerText = `Module ${currentModule.id}/12`;
       document.getElementById('course-title').innerText = currentModule.title;
       document.getElementById('course-content').innerText = currentModule.content;
+
+      const alertBox = document.getElementById('course-alert');
+      if (echec) alertBox.classList.remove('hidden');
+      else alertBox.classList.add('hidden');
+
+      naviguerVers('course');
+    }
+
+    // PASSER AU QUIZ (SÉPARÉ DU COURS)
+    function passerAuQuiz() {
+      if (!currentModule) return;
+      selectedOption = null;
+
+      document.getElementById('quiz-module-title').innerText = currentModule.title;
       document.getElementById('quiz-question').innerText = currentModule.question;
       document.getElementById('quiz-feedback').innerText = '';
 
@@ -431,8 +511,7 @@
         optionsContainer.appendChild(btn);
       });
 
-      document.getElementById('view-modules').classList.add('hidden');
-      document.getElementById('view-course').classList.remove('hidden');
+      naviguerVers('quiz');
     }
 
     async function validerQuiz() {
@@ -445,30 +524,66 @@
 
       if (selectedOption === currentModule.answer) {
         validatedModules.add(currentModule.id);
-        
         await sauvegarderProgressionSupabase();
 
         feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
         feedback.className = "mt-3 text-xs text-center font-medium text-emerald-400";
-        setTimeout(afficherListeModules, 1500);
+        setTimeout(() => naviguerVers('modules'), 1500);
       } else {
-        feedback.innerText = "Mauvaise réponse. Réessayez !";
+        feedback.innerText = "Échec au quiz. Redirection vers la leçon...";
         feedback.className = "mt-3 text-xs text-center font-medium text-rose-400";
+        setTimeout(() => ouvrirCourse(currentModule.id, true), 1800);
       }
     }
 
-    // GESTION DU CERTIFICAT
+    // TABLEAU DE BORD UTILISATEUR
+    function mettreAJourDashboard() {
+      if (!currentUser) return;
+      
+      document.getElementById('dash-email').innerText = currentUser.email;
+      const createdAt = new Date(currentUser.created_at).toLocaleDateString('fr-FR', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+      document.getElementById('dash-date').innerText = `Membre depuis le ${createdAt}`;
+
+      const count = validatedModules.size;
+      const percent = Math.round((count / 12) * 100);
+
+      document.getElementById('dash-percent').innerText = `${percent}%`;
+      document.getElementById('dash-count-text').innerText = `${count} / 12 modules validés`;
+      document.getElementById('dash-progress-bar').style.width = `${percent}%`;
+
+      if (count === 12) document.getElementById('dash-cert-box').classList.remove('hidden');
+      else document.getElementById('dash-cert-box').classList.add('hidden');
+
+      const listContainer = document.getElementById('dash-modules-list');
+      listContainer.innerHTML = '';
+
+      modulesData.forEach((mod) => {
+        const isValid = validatedModules.has(mod.id);
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-3 bg-slate-950 border border-slate-800/80 rounded-lg text-xs";
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-slate-400">#${mod.id}</span>
+            <span class="text-slate-200 font-medium">${mod.title}</span>
+          </div>
+          <span class="${isValid ? 'text-emerald-400 font-bold' : 'text-slate-500'}">
+            ${isValid ? '✓ Validé' : 'Non validé'}
+          </span>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
+
+    // CERTIFICAT
     function ouvrirCertificat() {
       if (!currentUser) return;
       document.getElementById('cert-user-email').innerText = currentUser.email;
-      
       const aujourdhui = new Date().toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        year: 'numeric', month: 'long', day: 'numeric'
       });
       document.getElementById('cert-date').innerText = aujourdhui;
-
       document.getElementById('certificate-modal').classList.remove('hidden');
     }
 
@@ -476,12 +591,15 @@
       document.getElementById('certificate-modal').classList.add('hidden');
     }
 
-    // Démarrage
-    document.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session && session.user) {
-        initialiserSession(session.user);
-      }
+    // DÉTECTION AUTOMATIQUE DE SESSION AU CHARGEMENT / RAFRAÎCHISSEMENT
+    document.addEventListener('DOMContentLoaded', () => {
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session && session.user) {
+          initialiserSession(session.user);
+        } else {
+          naviguerVers('auth');
+        }
+      });
     });
   </script>
 </body>
