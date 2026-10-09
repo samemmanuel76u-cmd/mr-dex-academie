@@ -17,7 +17,7 @@
               500: '#22c55e',
               600: '#16a34a',
               700: '#15803d',
-              950: '#052e16',
+              950: '#052e16'
             }
           }
         }
@@ -25,157 +25,77 @@
     }
   </script>
 </head>
-<body class="h-full flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-slate-950">
-
-  <!-- TOP HEADER -->
+<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased">
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      
-      <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center font-bold text-slate-950 shadow-lg shadow-brand-500/20">
-          DEX
-        </div>
-        <span class="font-extrabold text-lg tracking-tight text-white hidden sm:inline">
-          Mr. DEX <span class="text-brand-500">Académie</span>
-        </span>
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded border border-emerald-500/20 text-sm">DEX</span>
+        <h1 class="font-bold text-lg text-slate-100">Mr. DEX Académie</h1>
       </div>
-
-      <!-- Progression Globale -->
-      <div id="progress-container" class="flex-1 max-w-md mx-4 hidden md:block">
-        <div class="flex justify-between text-xs mb-1 font-medium text-slate-400">
-          <span>Progression du cursus</span>
-          <span id="progress-text" class="text-brand-500 font-bold">0% (0/12)</span>
-        </div>
-        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700/50">
-          <div id="progress-bar" class="bg-gradient-to-r from-brand-600 to-emerald-400 h-2 rounded-full w-0 transition-all duration-500"></div>
-        </div>
+      <div class="flex items-center gap-3 text-sm text-slate-400">
+        <span>Progression : <strong id="progress-text" class="text-emerald-400">0/12</strong></span>
       </div>
-
-      <!-- Sélecteur de langue & Profil -->
-      <div class="flex items-center gap-4">
-        <div class="relative">
-          <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-slate-800 text-slate-200 text-xs font-semibold py-2 px-3 pr-8 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer">
-            <option value="fr">🇫🇷 FR</option>
-            <option value="en">🇬🇧 EN</option>
-            <option value="de">🇩🇪 DE</option>
-          </select>
-        </div>
-
-        <div id="user-avatar" class="flex items-center gap-3 border-l border-slate-800 pl-4">
-          <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
-            DX
-          </div>
-          <span id="user-name" class="text-xs font-medium text-slate-300 hidden lg:inline">Étudiant</span>
-        </div>
-      </div>
-
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
-    
-    <!-- NAVIGATION SIDENAV (MODULES 1 à 12) -->
-    <aside class="w-full lg:w-80 flex-shrink-0">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sticky top-24">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 px-2">
-          Programme de Formation
-        </h2>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
+      <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage en cybersécurité.</p>
+    </div>
 
-        <div id="modules-list" class="space-y-2 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
-          <!-- Les modules s'afficheront dynamiquement ici -->
-        </div>
-
-        <div class="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs leading-relaxed">
-          💡 <span class="font-bold">Règle d'or :</span> Obtenez <span class="underline font-bold">100% au quiz</span> pour débloquer le module suivant.
-        </div>
-      </div>
-    </aside>
-
-    <!-- CONTENT AREA -->
-    <section class="flex-1 space-y-8">
-      
-      <!-- Zone d'affichage du cours -->
-      <div id="course-card" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
-        <div class="flex items-center gap-2 text-xs font-bold text-brand-500 uppercase tracking-wider">
-          <span id="module-number-badge">Module 1 / 12</span> • <span>Débutant</span>
-        </div>
-        <h1 id="module-title" class="text-2xl sm:text-3xl font-extrabold text-white">
-          Chargement du module...
-        </h1>
-        <div id="module-content" class="text-slate-300 space-y-4 leading-relaxed text-sm sm:text-base">
-          <!-- Contenu injecté dynamiquement -->
-        </div>
-      </div>
-
-      <!-- Zone de Quiz -->
-      <div id="quiz-card" class="bg-slate-900 border border-brand-500/30 rounded-2xl p-6 sm:p-8 space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-          <div>
-            <h2 class="text-xl font-bold text-white">Quiz de Validation (100% Requis)</h2>
-            <p class="text-xs text-slate-400">Répondez sans faute pour valider le module.</p>
-          </div>
-        </div>
-
-        <div id="quiz-questions-container" class="space-y-6">
-          <!-- Questions du quiz injectées dynamiquement -->
-        </div>
-
-        <div class="pt-4 flex justify-end">
-          <button onclick="submitQuiz()" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold transition shadow-lg shadow-brand-500/20">
-            Valider le Quiz & Continuer →
-          </button>
-        </div>
-      </div>
-
-    </section>
-
+    <!-- Conteneur dynamique des 12 modules -->
+    <div id="modules-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Les modules s'afficheront ici -->
+    </div>
   </main>
 
   <script>
-    // Configuration de démarrage
-    let currentLang = 'fr';
-    let currentModule = 1;
+    // 1. Liste complète des 12 modules
+    const modulesData = [
+      { id: 1, title: "Module 1 : Introduction à la Cybersécurité", desc: "Les bases de la sécurité, la triade CIA et les types de menaces." },
+      { id: 2, title: "Module 2 : Ingénierie Sociale & Phishing", desc: "Identifier les tentatives d'hameçonnage et la manipulation psychologique." },
+      { id: 3, title: "Module 3 : Gestion des Mots de Passe & MFA", desc: "Création de mots de passe forts et authentification à deux facteurs." },
+      { id: 4, title: "Module 4 : Sécurité du Réseau & Wi-Fi", desc: "Protéger ses connexions, utiliser un VPN et éviter les Wi-Fi publics." },
+      { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée." },
+      { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection proactive." },
+      { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, gestion des permissions et sauvegardes." },
+      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking." },
+      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes." },
+      { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité." },
+      { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA." },
+      { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant les 11 modules précédents." }
+    ];
 
-    function changeLanguage(lang) {
-      currentLang = lang;
-      renderCurrentModule();
+    // 2. Fonction d'affichage des cartes
+    function afficherModules() {
+      const container = document.getElementById('modules-list');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      modulesData.forEach((mod) => {
+        const card = document.createElement('div');
+        card.className = "p-5 border border-slate-800 bg-slate-900 rounded-xl shadow-sm hover:border-emerald-500/50 transition-all flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold px-2 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
+                Module ${mod.id}/12
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-100 mb-2">${mod.title}</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">${mod.desc}</p>
+          </div>
+          <button onclick="alert('Chargement du ${mod.title}')" class="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors mt-auto">
+            Accéder au cours
+          </button>
+        `;
+        container.appendChild(card);
+      });
     }
 
-    function renderCurrentModule() {
-      document.getElementById('module-title').innerText = "Module 1 : Introduction à la Cybersécurité";
-      document.getElementById('module-content').innerHTML = `
-        <p>Bienvenue dans le Module 1 de <strong>Mr. DEX Académie</strong>.</p>
-        <p>Pour sécuriser vos informations, retenez la <strong>Triade CIA</strong> :</p>
-        <ul class="list-disc pl-5 space-y-1 text-slate-300">
-          <li><strong>Confidentialité :</strong> Seules les personnes autorisées ont accès aux données.</li>
-          <li><strong>Intégrité :</strong> Les données ne doivent pas être modifiées par un pirate.</li>
-          <li><strong>Disponibilité :</strong> Les services doivent rester accessibles 24/7.</li>
-        </ul>
-      `;
-
-      document.getElementById('quiz-questions-container').innerHTML = `
-        <div class="space-y-3">
-          <p class="font-semibold text-slate-200">Q1. Que signifie le 'C' dans le modèle CIA ?</p>
-          <label class="flex items-center p-3 rounded-lg bg-slate-950 border border-slate-800 cursor-pointer">
-            <input type="radio" name="q1" value="a" class="text-brand-500">
-            <span class="ml-2 text-sm">A) Calcul</span>
-          </label>
-          <label class="flex items-center p-3 rounded-lg bg-slate-950 border border-slate-800 cursor-pointer">
-            <input type="radio" name="q1" value="b" class="text-brand-500">
-            <span class="ml-2 text-sm">B) Confidentialité (Bonne réponse)</span>
-          </label>
-        </div>
-      `;
-    }
-
-    function submitQuiz() {
-      alert("Félicitations ! Vous avez validé le quiz à 100%. Le module suivant est débloqué.");
-    }
-
-    // Initialisation
-    renderCurrentModule();
+    document.addEventListener('DOMContentLoaded', afficherModules);
   </script>
 </body>
 </html>
