@@ -28,7 +28,7 @@
 <body class="h-full bg-slate-950 text-slate-100 font-sans antialiased">
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="afficherListeModules()">
         <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded border border-emerald-500/20 text-sm">DEX</span>
         <h1 class="font-bold text-lg text-slate-100">Mr. DEX Académie</h1>
       </div>
@@ -39,63 +39,162 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
-      <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage en cybersécurité.</p>
+    <!-- Vue Liste des modules -->
+    <div id="view-modules">
+      <div class="mb-8">
+        <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
+        <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage en cybersécurité.</p>
+      </div>
+      <div id="modules-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
-    <!-- Conteneur dynamique des 12 modules -->
-    <div id="modules-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Les modules s'afficheront ici -->
+    <!-- Vue Domicile du Cours & Quiz -->
+    <div id="view-course" class="hidden max-w-3xl mx-auto">
+      <button onclick="afficherListeModules()" class="mb-6 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-2">
+        ← Retour au programme
+      </button>
+
+      <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl mb-6">
+        <span id="course-badge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
+          Module 1/12
+        </span>
+        <h2 id="course-title" class="text-2xl font-bold text-slate-100 mt-3 mb-2"></h2>
+        <p id="course-content" class="text-sm text-slate-300 leading-relaxed"></p>
+      </div>
+
+      <!-- Quiz -->
+      <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl">
+        <h3 class="text-lg font-bold text-slate-100 mb-1">Quiz de Validation (100% Requis)</h3>
+        <p class="text-xs text-slate-400 mb-4">Répondez correctement à la question pour valider ce module.</p>
+        
+        <p id="quiz-question" class="text-sm font-semibold text-slate-200 mb-3"></p>
+        <div id="quiz-options" class="space-y-2 mb-4"></div>
+
+        <button onclick="validerQuiz()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
+          Valider le Quiz & Continuer
+        </button>
+        <p id="quiz-feedback" class="mt-3 text-xs text-center font-medium"></p>
+      </div>
     </div>
   </main>
 
   <script>
-    // 1. Liste complète des 12 modules
     const modulesData = [
-      { id: 1, title: "Module 1 : Introduction à la Cybersécurité", desc: "Les bases de la sécurité, la triade CIA et les types de menaces." },
-      { id: 2, title: "Module 2 : Ingénierie Sociale & Phishing", desc: "Identifier les tentatives d'hameçonnage et la manipulation psychologique." },
-      { id: 3, title: "Module 3 : Gestion des Mots de Passe & MFA", desc: "Création de mots de passe forts et authentification à deux facteurs." },
-      { id: 4, title: "Module 4 : Sécurité du Réseau & Wi-Fi", desc: "Protéger ses connexions, utiliser un VPN et éviter les Wi-Fi publics." },
-      { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée." },
-      { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection proactive." },
-      { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, gestion des permissions et sauvegardes." },
-      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking." },
-      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes." },
-      { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité." },
-      { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA." },
-      { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant les 11 modules précédents." }
+      { 
+        id: 1, 
+        title: "Module 1 : Introduction à la Cybersécurité", 
+        desc: "Les bases de la sécurité, la triade CIA et les types de menaces.",
+        content: "Bienvenue dans le Module 1 ! Pour sécuriser vos données, retenez la Triade CIA : Confidentialité (accès réservé), Intégrité (données non altérées), et Disponibilité (services toujours accessibles).",
+        question: "Que signifie le 'C' dans le modèle CIA ?",
+        options: ["Calcul", "Confidentialité", "Contrôle", "Cyber"],
+        answer: 1
+      },
+      { 
+        id: 2, 
+        title: "Module 2 : Ingénierie Sociale & Phishing", 
+        desc: "Identifier les tentatives d'hameçonnage et la manipulation psychologique.",
+        content: "Le phishing (hameçonnage) utilise l'urgence ou la peur pour vous inciter à cliquer sur des liens malveillants ou à fournir vos identifiants.",
+        question: "Quel est le principal signal d'alerte d'un e-mail suspect ?",
+        options: ["Une formule de politesse", "Une demande urgente avec lien externe", "Une pièce jointe PDF", "Un logo de l'entreprise"],
+        answer: 1
+      },
+      { id: 3, title: "Module 3 : Gestion des Mots de Passe & MFA", desc: "Création de mots de passe forts et authentification à deux facteurs.", content: "Utilisez un gestionnaire de mots de passe et activez toujours la double authentification (MFA).", question: "Qu'est-ce que le MFA ?", options: ["Master File Access", "Authentification Multi-Facteurs", "Main Frame Analysis", "Mode Fast Action"], answer: 1 },
+      { id: 4, title: "Module 4 : Sécurité du Réseau & Wi-Fi", desc: "Protéger ses connexions, utiliser un VPN et éviter les Wi-Fi publics.", content: "Les réseaux Wi-Fi publics non sécurisés permettent l'interception de données. Utilisez un VPN sur les réseaux inconnus.", question: "Que fait un VPN ?", options: ["Nettoie le disque dur", "Chiffre votre trafic internet", "Augmente le Wi-Fi", "Bloque les virus"], answer: 1 },
+      { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée.", content: "Limitez les informations personnelles partagées publiquement sur les réseaux sociaux.", question: "Quel principe garantit le contrôle de vos données ?", options: ["RGPD / Confidentialité", "Open Source", "P2P", "Cookies"], answer: 0 },
+      { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection.", content: "Un ransomware chiffre vos fichiers et exige une rançon. La seule vraie protection est une sauvegarde externe régulière.", question: "Que fait un Ransomware ?", options: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche des pubs", "Efface le navigateur"], answer: 1 },
+      { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, permissions d'applications et sauvegardes.", content: "N'installez des applications que depuis les stores officiels (Play Store, App Store).", question: "D'où faut-il télécharger les applications ?", options: ["Sites web au hasard", "Stores officiels", "Forums", "E-mails reçus"], answer: 1 },
+      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
+      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez jamais de pièces jointes exécutables (.exe, .scr) provenant d'expéditeurs inconnus.", question: "Quel fichier est le plus dangereux à ouvrir ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
+      { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité.", content: "La règle 3-2-1 : 3 copies de vos données, sur 2 supports différents, dont 1 hors site.", question: "Combien de copies recommande la règle 3-2-1 ?", options: ["1 copie", "2 copies", "3 copies", "5 copies"], answer: 2 },
+      { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA.", content: "L'IA permet aux pirates de générer des e-mails parfaits sans fautes d'orthographe et des fausses voix (deepfakes audio).", question: "Comment vérifier une demande d'urgence vocale suspecte ?", options: ["Exécuter immédiatement", "Rappeler la personne par un autre canal", "Ignorer pour toujours", "Envoyer de l'argent"], answer: 1 },
+      { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant les 11 modules précédents.", content: "Félicitations pour votre parcours ! La cybersécurité est une vigilance de tous les jours.", question: "Quelle est la meilleure défense en cybersécurité ?", options: ["Un seul mot de passe partout", "La vigilance constante de l'utilisateur", "Ne plus utiliser Internet", "Désactiver les mises à jour"], answer: 1 }
     ];
 
-    // 2. Fonction d'affichage des cartes
-    function afficherModules() {
-      const container = document.getElementById('modules-list');
-      if (!container) return;
+    let currentModule = null;
+    let selectedOption = null;
+    let validatedModules = new Set();
 
+    function afficherListeModules() {
+      document.getElementById('view-modules').classList.remove('hidden');
+      document.getElementById('view-course').classList.add('hidden');
+      
+      const container = document.getElementById('modules-list');
       container.innerHTML = '';
 
       modulesData.forEach((mod) => {
+        const isValidated = validatedModules.has(mod.id);
         const card = document.createElement('div');
-        card.className = "p-5 border border-slate-800 bg-slate-900 rounded-xl shadow-sm hover:border-emerald-500/50 transition-all flex flex-col justify-between";
+        card.className = `p-5 border ${isValidated ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-slate-800 bg-slate-900'} rounded-xl shadow-sm flex flex-col justify-between`;
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-semibold px-2 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
                 Module ${mod.id}/12
               </span>
+              ${isValidated ? '<span class="text-xs font-bold text-emerald-400">✓ Validé</span>' : ''}
             </div>
             <h3 class="text-lg font-bold text-slate-100 mb-2">${mod.title}</h3>
             <p class="text-xs text-slate-400 leading-relaxed mb-4">${mod.desc}</p>
           </div>
-          <button onclick="alert('Chargement du ${mod.title}')" class="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors mt-auto">
-            Accéder au cours
+          <button onclick="ouvrirModule(${mod.id})" class="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors mt-auto">
+            ${isValidated ? 'Revoir le cours' : 'Accéder au cours'}
           </button>
         `;
         container.appendChild(card);
       });
+
+      document.getElementById('progress-text').innerText = `${validatedModules.size}/12`;
     }
 
-    document.addEventListener('DOMContentLoaded', afficherModules);
+    function ouvrirModule(id) {
+      currentModule = modulesData.find(m => m.id === id);
+      selectedOption = null;
+
+      document.getElementById('course-badge').innerText = `Module ${currentModule.id}/12`;
+      document.getElementById('course-title').innerText = currentModule.title;
+      document.getElementById('course-content').innerText = currentModule.content;
+      document.getElementById('quiz-question').innerText = currentModule.question;
+      document.getElementById('quiz-feedback').innerText = '';
+
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = '';
+
+      currentModule.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3 border border-slate-800 bg-slate-950 rounded-lg text-xs hover:border-slate-700 transition-all option-btn";
+        btn.innerText = `${String.fromCharCode(65 + idx)}) ${opt}`;
+        btn.onclick = () => {
+          document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('border-emerald-500', 'bg-emerald-950/30'));
+          btn.classList.add('border-emerald-500', 'bg-emerald-950/30');
+          selectedOption = idx;
+        };
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById('view-modules').classList.add('hidden');
+      document.getElementById('view-course').classList.remove('hidden');
+    }
+
+    function validerQuiz() {
+      const feedback = document.getElementById('quiz-feedback');
+      if (selectedOption === null) {
+        feedback.innerText = "Veuillez sélectionner une réponse.";
+        feedback.className = "mt-3 text-xs text-center font-medium text-amber-400";
+        return;
+      }
+
+      if (selectedOption === currentModule.answer) {
+        validatedModules.add(currentModule.id);
+        feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
+        feedback.className = "mt-3 text-xs text-center font-medium text-emerald-400";
+        setTimeout(afficherListeModules, 1500);
+      } else {
+        feedback.innerText = "Mauvaise réponse. Réessayez !";
+        feedback.className = "mt-3 text-xs text-center font-medium text-rose-400";
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', afficherListeModules);
   </script>
 </body>
 </html>
