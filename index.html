@@ -46,43 +46,54 @@
         <h1 class="font-bold text-lg text-slate-100">Mr. DEX Académie</h1>
       </div>
       
-      <!-- Zone Profil / Navigation -->
-      <div id="user-profile-header" class="hidden flex items-center gap-3 text-sm">
-        <button onclick="naviguerVers('dashboard')" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded border border-slate-700 transition">
-          📊 Tableau de bord
-        </button>
-        <button id="cert-header-btn" onclick="ouvrirCertificat()" class="hidden px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold rounded border border-amber-500/30 transition flex items-center gap-1">
-          🎓 Certificat
-        </button>
-        <button onclick="deconnecterUtilisateur()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-semibold rounded border border-slate-700 transition">
-          Déconnexion
-        </button>
+      <!-- Zone Profil / Langue / Navigation -->
+      <div class="flex items-center gap-3 text-sm">
+        <select id="lang-select" onchange="changerLangue(this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded px-2 py-1 focus:outline-none focus:border-emerald-500">
+          <option value="fr">🇫🇷 Français</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="de">🇩🇪 Deutsch</option>
+        </select>
+
+        <div id="user-profile-header" class="hidden flex items-center gap-3">
+          <button onclick="naviguerVers('dashboard')" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded border border-slate-700 transition" data-i18n="dash_btn">
+            📊 Tableau de bord
+          </button>
+          <button id="cert-header-btn" onclick="verifierInfosCertificat()" class="hidden px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold rounded border border-amber-500/30 transition flex items-center gap-1" data-i18n="cert_btn">
+            🎓 Certificat
+          </button>
+          <button onclick="deconnecterUtilisateur()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-semibold rounded border border-slate-700 transition" data-i18n="logout_btn">
+            Déconnexion
+          </button>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
     
-    <!-- ÉCRAN D'AUTHENTIFICATION (Connexion / Inscription) -->
+    <!-- ÉCRAN D'AUTHENTIFICATION (Connexion / Inscription / Mot de passe oublié) -->
     <div id="view-auth" class="max-w-md mx-auto my-12 p-6 border border-slate-800 bg-slate-900 rounded-2xl shadow-xl">
       <div class="text-center mb-6">
-        <span class="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded-full text-xs border border-emerald-500/20 mb-3">Accès Académie</span>
+        <span class="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 font-bold rounded-full text-xs border border-emerald-500/20 mb-3" data-i18n="badge_access">Accès Académie</span>
         <h2 id="auth-title" class="text-2xl font-bold text-slate-100">Connexion à votre compte</h2>
         <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Connectez-vous pour accéder à votre espace de formation.</p>
       </div>
 
       <form id="auth-form" onsubmit="gererAuthentification(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Adresse e-mail</label>
+          <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n="label_email">Adresse e-mail</label>
           <input type="email" id="auth-email" required placeholder="nom@exemple.com" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
         </div>
 
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Mot de passe</label>
-          <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+        <div id="password-field-box">
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-medium text-slate-300" data-i18n="label_password">Mot de passe</label>
+            <button type="button" onclick="afficherModeRecuperation()" class="text-[11px] text-emerald-400 hover:underline" data-i18n="forgot_link">Mot de passe oublié ?</button>
+          </div>
+          <input type="password" id="auth-password" minlength="6" placeholder="••••••••" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
         </div>
 
-        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors" data-i18n="btn_login">
           Se connecter
         </button>
       </form>
@@ -91,33 +102,33 @@
 
       <div class="mt-6 pt-4 border-t border-slate-800 text-center">
         <p class="text-xs text-slate-400" id="auth-toggle-text">
-          Pas encore de compte ? 
-          <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S'inscrire</button>
+          <span data-i18n="no_account">Pas encore de compte ?</span> 
+          <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline" data-i18n="register_link">S'inscrire</button>
         </p>
       </div>
     </div>
 
-    <!-- VUE TABLEAU DE BORD UTILISATEUR -->
+    <!-- VUE TABLEAU DE BORD -->
     <div id="view-dashboard" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-2xl font-extrabold text-slate-100">Tableau de Bord</h2>
-          <p class="text-xs text-slate-400 mt-1">Suivi détaillé de votre apprentissage en cybersécurité.</p>
+          <h2 class="text-2xl font-extrabold text-slate-100" data-i18n="dash_title">Tableau de Bord</h2>
+          <p class="text-xs text-slate-400 mt-1" data-i18n="dash_subtitle">Suivi détaillé de votre apprentissage en cybersécurité.</p>
         </div>
-        <button onclick="naviguerVers('modules')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition">
+        <button onclick="naviguerVers('modules')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition" data-i18n="continue_training">
           Continuer la formation →
         </button>
       </div>
 
-      <!-- Carte Infos Utilisateur & Progression -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="p-6 border border-slate-800 bg-slate-900 rounded-2xl md:col-span-1">
-          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Profil Apprenant</span>
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider" data-i18n="learner_profile">Profil Apprenant</span>
           <p id="dash-email" class="text-sm font-bold text-slate-100 mt-2 truncate"></p>
+          <p id="dash-name-display" class="text-xs text-emerald-400 mt-1 font-semibold"></p>
           <p id="dash-date" class="text-xs text-slate-500 mt-1"></p>
           
           <div class="mt-6 pt-6 border-t border-slate-800">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Statut Général</span>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider" data-i18n="general_status">Statut Général</span>
             <div class="mt-2 text-2xl font-black text-emerald-400" id="dash-percent">0%</div>
             <p class="text-xs text-slate-400 mt-1" id="dash-count-text">0 / 12 modules validés</p>
           </div>
@@ -125,51 +136,46 @@
 
         <div class="p-6 border border-slate-800 bg-slate-900 rounded-2xl md:col-span-2 flex flex-col justify-between">
           <div>
-            <h3 class="text-sm font-bold text-slate-200 mb-2">Avancement global</h3>
+            <h3 class="text-sm font-bold text-slate-200 mb-2" data-i18n="global_progress">Avancement global</h3>
             <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800">
               <div id="dash-progress-bar" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
             </div>
-            <p class="text-xs text-slate-400 mt-3 leading-relaxed">
-              Pour obtenir votre certification finale, vous devez réussir 100% des quiz associés aux 12 modules.
-            </p>
           </div>
 
           <div id="dash-cert-box" class="hidden mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between">
             <div>
-              <p class="text-xs font-bold text-amber-400">Certificat Débloqué !</p>
-              <p class="text-[11px] text-slate-300">Votre diplôme est prêt à être imprimé.</p>
+              <p class="text-xs font-bold text-amber-400" data-i18n="cert_unlocked">Certificat Débloqué !</p>
+              <p class="text-[11px] text-slate-300" data-i18n="cert_ready">Votre diplôme est prêt à être imprimé.</p>
             </div>
-            <button onclick="ouvrirCertificat()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg hover:bg-amber-400 transition">
+            <button onclick="verifierInfosCertificat()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg hover:bg-amber-400 transition" data-i18n="show_btn">
               Afficher
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Détail par Module -->
       <div class="p-6 border border-slate-800 bg-slate-900 rounded-2xl">
-        <h3 class="text-sm font-bold text-slate-200 mb-4">Détail des Modules</h3>
+        <h3 class="text-sm font-bold text-slate-200 mb-4" data-i18n="modules_detail">Détail des Modules</h3>
         <div id="dash-modules-list" class="space-y-3"></div>
       </div>
     </div>
 
     <!-- VUE LISTE DES MODULES -->
     <div id="view-modules" class="hidden">
-      <!-- Bannière Certificat -->
       <div id="cert-banner" class="hidden mb-8 p-6 bg-gradient-to-r from-amber-950/40 via-emerald-950/40 to-slate-900 border border-amber-500/40 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Félicitations !</span>
-          <h3 class="text-xl font-bold text-slate-100 mt-1">Vous avez validé les 12 modules de formation</h3>
-          <p class="text-xs text-slate-300 mt-1">Votre certification officielle en Cybersécurité Mr. DEX Académie est disponible.</p>
+          <span class="text-xs font-bold text-amber-400 uppercase tracking-widest" data-i18n="congrats">Félicitations !</span>
+          <h3 class="text-xl font-bold text-slate-100 mt-1" data-i18n="all_modules_done">Vous avez validé les 12 modules de formation</h3>
+          <p class="text-xs text-slate-300 mt-1" data-i18n="cert_available">Votre certification officielle en Cybersécurité Mr. DEX Académie est disponible.</p>
         </div>
-        <button onclick="ouvrirCertificat()" class="px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg whitespace-nowrap">
+        <button onclick="verifierInfosCertificat()" class="px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg whitespace-nowrap" data-i18n="show_cert_btn">
           🎓 Afficher mon Certificat
         </button>
       </div>
 
       <div class="mb-8">
-        <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl">Programme de Formation</h2>
-        <p class="text-sm text-slate-400 mt-1">Sélectionnez un module pour commencer votre apprentissage.</p>
+        <h2 class="text-2xl font-extrabold text-slate-100 sm:text-3xl" data-i18n="training_program">Programme de Formation</h2>
+        <p class="text-sm text-slate-400 mt-1" data-i18n="select_module">Sélectionnez un module pour commencer votre apprentissage.</p>
       </div>
       <div id="modules-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
@@ -177,46 +183,43 @@
     <!-- VUE LECTURE DE COURS -->
     <div id="view-course" class="hidden max-w-3xl mx-auto">
       <button onclick="naviguerVers('modules')" class="mb-6 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-2">
-        ← Retour au programme
+        ← <span data-i18n="back_to_program">Retour au programme</span>
       </button>
 
       <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl mb-6">
         <div class="flex items-center justify-between mb-3">
-          <span id="course-badge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
-            Module 1/12
-          </span>
-          <span class="text-xs text-slate-400 font-medium">Étape 1/2 : Leçon</span>
+          <span id="course-badge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded border border-emerald-800"></span>
+          <span class="text-xs text-slate-400 font-medium" data-i18n="step_lesson">Étape 1/2 : Leçon</span>
         </div>
         
         <h2 id="course-title" class="text-2xl font-bold text-slate-100 mb-4"></h2>
         
-        <!-- Message d'avertissement en cas de réorientation après échec -->
         <div id="course-alert" class="hidden mb-4 p-3 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs rounded-lg">
-          ⚠️ <strong>Attention :</strong> Vous avez échoué au quiz. Veuillez relire attentivement la leçon avant de retenter le quiz.
+          ⚠️ <span data-i18n="fail_alert">Vous avez échoué au quiz. Veuillez relire attentivement la leçon avant de retenter le quiz.</span>
         </div>
 
         <p id="course-content" class="text-sm text-slate-300 leading-relaxed space-y-4"></p>
 
         <div class="mt-8 pt-6 border-t border-slate-800 text-right">
-          <button onclick="passerAuQuiz()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
+          <button onclick="passerAuQuiz()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors" data-i18n="go_to_quiz">
             Passer au Quiz de validation →
           </button>
         </div>
       </div>
     </div>
 
-    <!-- VUE QUIZ ISOLÉ (Le cours est totalement masqué ici) -->
+    <!-- VUE QUIZ ISOLÉ -->
     <div id="view-quiz" class="hidden max-w-2xl mx-auto">
       <div class="p-6 border border-slate-800 bg-slate-900 rounded-xl">
         <div class="flex items-center justify-between mb-4">
-          <span id="quiz-badge" class="text-xs font-semibold px-2.5 py-1 bg-amber-500/10 text-amber-400 rounded border border-amber-500/30">
+          <span id="quiz-badge" class="text-xs font-semibold px-2.5 py-1 bg-amber-500/10 text-amber-400 rounded border border-amber-500/30" data-i18n="quiz_validation">
             Quiz de Validation
           </span>
-          <span class="text-xs text-slate-400 font-medium">Étape 2/2 : Évaluation</span>
+          <span class="text-xs text-slate-400 font-medium" data-i18n="step_eval">Étape 2/2 : Évaluation</span>
         </div>
 
         <h3 id="quiz-module-title" class="text-lg font-bold text-slate-100 mb-1"></h3>
-        <p class="text-xs text-slate-400 mb-6">Répondez correctement pour valider définitivement ce module (aucun document autorisé).</p>
+        <p class="text-xs text-slate-400 mb-6" data-i18n="quiz_instruction">Répondez correctement pour valider définitivement ce module.</p>
         
         <div class="p-4 bg-slate-950 border border-slate-800 rounded-lg mb-6">
           <p id="quiz-question" class="text-sm font-semibold text-slate-100"></p>
@@ -224,7 +227,7 @@
 
         <div id="quiz-options" class="space-y-3 mb-6"></div>
 
-        <button onclick="validerQuiz()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors">
+        <button onclick="validerQuiz()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors" data-i18n="submit_answer">
           Soumettre ma réponse
         </button>
         
@@ -232,7 +235,37 @@
       </div>
     </div>
 
-    <!-- MODAL DU CERTIFICAT -->
+    <!-- MODAL DE SAISIE DES INFOS CERTIFICAT (Nom, Prénom, Sexe) -->
+    <div id="cert-info-modal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+        <h3 class="text-lg font-bold text-slate-100 mb-2" data-i18n="cert_info_title">Informations du Certificat</h3>
+        <p class="text-xs text-slate-400 mb-4" data-i18n="cert_info_subtitle">Veuillez renseigner vos informations officielles pour générer votre diplôme.</p>
+        
+        <form onsubmit="sauvegarderInfosCertificat(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n="label_firstname">Prénom</label>
+            <input type="text" id="cert-firstname" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n="label_lastname">Nom</label>
+            <input type="text" id="cert-lastname" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n="label_gender">Sexe</label>
+            <select id="cert-gender" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+              <option value="" data-i18n="select_gender">Sélectionner...</option>
+              <option value="M." data-i18n="gender_m">Masculin (M.)</option>
+              <option value="Mme" data-i18n="gender_f">Féminin (Mme)</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition" data-i18n="generate_cert_btn">
+            Générer mon Certificat →
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL DU CERTIFICAT OFFICIEL -->
     <div id="certificate-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div class="relative w-full max-w-3xl bg-slate-900 border-2 border-amber-500/50 rounded-2xl p-8 shadow-2xl text-center">
         <button onclick="fermerCertificat()" class="no-print absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold p-2">✕</button>
@@ -242,33 +275,33 @@
             <span class="px-3 py-1 bg-amber-500/10 text-amber-400 font-bold rounded border border-amber-500/30 text-sm">MR. DEX ACADÉMIE</span>
           </div>
 
-          <h1 class="text-3xl md:text-4xl font-serif font-bold text-amber-400 tracking-wide mb-2">CERTIFICAT DE RÉUSSITE</h1>
-          <p class="text-xs text-slate-400 uppercase tracking-widest mb-6">Spécialisation en Cybersécurité & Hygiène Numérique</p>
+          <h1 class="text-3xl md:text-4xl font-serif font-bold text-amber-400 tracking-wide mb-2" data-i18n="cert_heading">CERTIFICAT DE RÉUSSITE</h1>
+          <p class="text-xs text-slate-400 uppercase tracking-widest mb-6" data-i18n="cert_subheading">Spécialisation en Cybersécurité & Hygiène Numérique</p>
 
-          <p class="text-sm text-slate-300 italic mb-2">Le présent certificat est décerné à :</p>
-          <h2 id="cert-user-email" class="text-2xl md:text-3xl font-bold text-slate-100 underline decoration-amber-500/50 underline-offset-8 mb-6"></h2>
+          <p class="text-sm text-slate-300 italic mb-2" data-i18n="cert_awarded">Le présent certificat est décerné à :</p>
+          <h2 id="cert-user-fullname" class="text-2xl md:text-3xl font-bold text-slate-100 underline decoration-amber-500/50 underline-offset-8 mb-6"></h2>
 
-          <p class="text-xs md:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed mb-8">
-            Pour avoir suivi et validé avec succès l'ensemble des <strong>12 modules de formation</strong> de la plateforme Mr. DEX Académie, démontrant la maîtrise des compétences clés en sécurité informatique, prévention du phishing et protection des données.
+          <p class="text-xs md:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed mb-8" data-i18n="cert_body">
+            Pour avoir suivi et validé avec succès l'ensemble des 12 modules de formation de la plateforme Mr. DEX Académie.
           </p>
 
           <div class="flex flex-col sm:flex-row justify-between items-center gap-6 pt-6 border-t border-slate-800 text-xs text-slate-400">
             <div>
-              <p class="font-semibold text-slate-300">Date de délivrance</p>
+              <p class="font-semibold text-slate-300" data-i18n="cert_date_label">Date de délivrance</p>
               <p id="cert-date" class="text-emerald-400 font-mono mt-1"></p>
             </div>
             <div>
               <div class="font-serif text-amber-400 text-lg font-bold italic mb-1">Mr. DEX</div>
-              <p class="text-slate-400 text-[10px] uppercase">Direction Pédagogique</p>
+              <p class="text-slate-400 text-[10px] uppercase" data-i18n="cert_director">Direction Pédagogique</p>
             </div>
           </div>
         </div>
 
         <div class="no-print mt-6 flex justify-center gap-4">
-          <button onclick="window.print()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition shadow-md">
+          <button onclick="window.print()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition shadow-md" data-i18n="print_btn">
             🖨️ Imprimer / Sauvegarder en PDF
           </button>
-          <button onclick="fermerCertificat()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-lg transition">
+          <button onclick="fermerCertificat()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-lg transition" data-i18n="close_btn">
             Fermer
           </button>
         </div>
@@ -287,43 +320,131 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let isSignUpMode = false;
+    let isRecoveryMode = false;
     let currentUser = null;
     let currentModule = null;
     let selectedOption = null;
     let validatedModules = new Set();
+    let currentLang = 'fr';
+    let userMetadata = { firstname: '', lastname: '', gender: '' };
+
+    const translations = {
+      fr: {
+        dash_btn: "📊 Tableau de bord", cert_btn: "🎓 Certificat", logout_btn: "Déconnexion",
+        badge_access: "Accès Académie", label_email: "Adresse e-mail", label_password: "Mot de passe",
+        forgot_link: "Mot de passe oublié ?", btn_login: "Se connecter", no_account: "Pas encore de compte ?",
+        register_link: "S'inscrire", dash_title: "Tableau de Bord", dash_subtitle: "Suivi détaillé de votre apprentissage en cybersécurité.",
+        continue_training: "Continuer la formation →", learner_profile: "Profil Apprenant", general_status: "Statut Général",
+        global_progress: "Avancement global", cert_unlocked: "Certificat Débloqué !", cert_ready: "Votre diplôme est prêt à être imprimé.",
+        show_btn: "Afficher", modules_detail: "Détail des Modules", congrats: "Félicitations !",
+        all_modules_done: "Vous avez validé les 12 modules de formation", cert_available: "Votre certification officielle en Cybersécurité Mr. DEX Académie est disponible.",
+        show_cert_btn: "🎓 Afficher mon Certificat", training_program: "Programme de Formation", select_module: "Sélectionnez un module pour commencer votre apprentissage.",
+        back_to_program: "Retour au programme", step_lesson: "Étape 1/2 : Leçon", fail_alert: "Vous avez échoué au quiz. Veuillez relire attentivement la leçon.",
+        go_to_quiz: "Passer au Quiz de validation →", quiz_validation: "Quiz de Validation", step_eval: "Étape 2/2 : Évaluation",
+        quiz_instruction: "Répondez correctement pour valider définitivement ce module.", submit_answer: "Soumettre ma réponse",
+        cert_info_title: "Informations du Certificat", cert_info_subtitle: "Veuillez renseigner vos informations officielles pour générer votre diplôme.",
+        label_firstname: "Prénom", label_lastname: "Nom", label_gender: "Sexe", select_gender: "Sélectionner...",
+        gender_m: "Masculin (M.)", gender_f: "Féminin (Mme)", generate_cert_btn: "Générer mon Certificat →",
+        cert_heading: "CERTIFICAT DE RÉUSSITE", cert_subheading: "Spécialisation en Cybersécurité & Hygiène Numérique",
+        cert_awarded: "Le présent certificat est décerné à :", cert_body: "Pour avoir suivi et validé avec succès l'ensemble des 12 modules de formation de la plateforme Mr. DEX Académie.",
+        cert_date_label: "Date de délivrance", cert_director: "Direction Pédagogique", print_btn: "🖨️ Imprimer / PDF", close_btn: "Fermer"
+      },
+      en: {
+        dash_btn: "📊 Dashboard", cert_btn: "🎓 Certificate", logout_btn: "Log out",
+        badge_access: "Academy Access", label_email: "Email address", label_password: "Password",
+        forgot_link: "Forgot password?", btn_login: "Log in", no_account: "Don't have an account?",
+        register_link: "Sign up", dash_title: "Dashboard", dash_subtitle: "Detailed tracking of your cybersecurity learning.",
+        continue_training: "Continue training →", learner_profile: "Learner Profile", general_status: "General Status",
+        global_progress: "Overall progress", cert_unlocked: "Certificate Unlocked!", cert_ready: "Your diploma is ready to print.",
+        show_btn: "View", modules_detail: "Module Details", congrats: "Congratulations!",
+        all_modules_done: "You have completed all 12 training modules", cert_available: "Your official Mr. DEX Academy Cybersecurity certification is available.",
+        show_cert_btn: "🎓 View my Certificate", training_program: "Training Program", select_module: "Select a module to start learning.",
+        back_to_program: "Back to program", step_lesson: "Step 1/2: Lesson", fail_alert: "Quiz failed. Please carefully re-read the lesson.",
+        go_to_quiz: "Proceed to validation Quiz →", quiz_validation: "Validation Quiz", step_eval: "Step 2/2: Evaluation",
+        quiz_instruction: "Answer correctly to successfully validate this module.", submit_answer: "Submit my answer",
+        cert_info_title: "Certificate Information", cert_info_subtitle: "Please provide your official information to generate your diploma.",
+        label_firstname: "First Name", label_lastname: "Last Name", label_gender: "Gender", select_gender: "Select...",
+        gender_m: "Male (Mr.)", gender_f: "Female (Ms.)", generate_cert_btn: "Generate my Certificate →",
+        cert_heading: "CERTIFICATE OF ACHIEVEMENT", cert_subheading: "Cybersecurity & Digital Hygiene Specialization",
+        cert_awarded: "This certificate is proudly presented to:", cert_body: "For successfully completing and validating all 12 training modules on the Mr. DEX Academy platform.",
+        cert_date_label: "Date of Issue", cert_director: "Academic Direction", print_btn: "🖨️ Print / PDF", close_btn: "Close"
+      },
+      de: {
+        dash_btn: "📊 Dashboard", cert_btn: "🎓 Zertifikat", logout_btn: "Abmelden",
+        badge_access: "Akademie-Zugang", label_email: "E-Mail-Adresse", label_password: "Passwort",
+        forgot_link: "Passwort vergessen?", btn_login: "Anmelden", no_account: "Noch kein Konto?",
+        register_link: "Registrieren", dash_title: "Dashboard", dash_subtitle: "Detaillierte Verfolgung Ihres Cybersecurity-Lernens.",
+        continue_training: "Training fortsetzen →", learner_profile: "Lerner-Profil", general_status: "Allgemeiner Status",
+        global_progress: "Gesamtfortschritt", cert_unlocked: "Zertifikat Freigeschaltet!", cert_ready: "Ihr Diplom ist druckbereit.",
+        show_btn: "Anzeigen", modules_detail: "Modul-Details", congrats: "Herzlichen Glückwunsch!",
+        all_modules_done: "Sie haben alle 12 Schulungsmodule erfolgreich abgeschlossen", cert_available: "Ihr offizielles Mr. DEX Academy Cybersecurity-Zertifikat ist verfügbar.",
+        show_cert_btn: "🎓 Mein Zertifikat anzeigen", training_program: "Schulungsprogramm", select_module: "Wählen Sie ein Modul aus, um zu beginnen.",
+        back_to_program: "Zurück zum Programm", step_lesson: "Schritt 1/2: Lektion", fail_alert: "Quiz nicht bestanden. Bitte lesen Sie die Lektion sorgfältig durch.",
+        go_to_quiz: "Zum Validierungs-Quiz →", quiz_validation: "Validierungs-Quiz", step_eval: "Schritt 2/2: Bewertung",
+        quiz_instruction: "Antworten Sie korrekt, um dieses Modul zu validieren.", submit_answer: "Antwort einreichen",
+        cert_info_title: "Zertifikatsinformationen", cert_info_subtitle: "Bitte geben Sie Ihre offiziellen Daten zur Ausstellung des Diploms ein.",
+        label_firstname: "Vorname", label_lastname: "Nachname", label_gender: "Geschlecht", select_gender: "Auswählen...",
+        gender_m: "Männlich (Herr)", gender_f: "Weiblich (Frau)", generate_cert_btn: "Zertifikat generieren →",
+        cert_heading: "LEISTUNGSZERTIFIKAT", cert_subheading: "Spezialisierung auf Cybersicherheit & Digitale Hygiene",
+        cert_awarded: "Dieses Zertifikat wird verliehen an:", cert_body: "Für den erfolgreichen Abschluss aller 12 Schulungsmodule auf der Mr. DEX Academy Plattform.",
+        cert_date_label: "Ausstellungsdatum", cert_director: "Akademische Leitung", print_btn: "🖨️ Drucken / PDF", close_btn: "Schließen"
+      }
+    };
 
     const modulesData = [
       { 
         id: 1, 
-        title: "Module 1 : Introduction à la Cybersécurité", 
-        desc: "Les bases de la sécurité, la triade CIA et les types de menaces.",
-        content: "Bienvenue dans le Module 1 ! Pour sécuriser vos données, retenez la Triade CIA : Confidentialité (accès réservé aux seules personnes autorisées), Intégrité (garantie que les données ne sont pas altérées), et Disponibilité (services toujours accessibles en cas de besoin).",
-        question: "Que signifie le 'C' dans le modèle CIA ?",
-        options: ["Calcul", "Confidentialité", "Contrôle", "Cyber"],
+        title: { fr: "Module 1 : Introduction à la Cybersécurité", en: "Module 1: Introduction to Cybersecurity", de: "Modul 1: Einführung in die Cybersicherheit" }, 
+        desc: { fr: "Les bases de la sécurité, la triade CIA et les types de menaces.", en: "Security basics, the CIA triad and threat types.", de: "Sicherheitsgrundlagen, die CIA-Triade und Bedrohungsarten." },
+        content: { 
+          fr: "Bienvenue dans le Module 1 ! Retenez la Triade CIA : Confidentialité, Intégrité, et Disponibilité.", 
+          en: "Welcome to Module 1! Remember the CIA Triad: Confidentiality, Integrity, and Availability.", 
+          de: "Willkommen in Modul 1! Merken Sie sich die CIA-Triade: Vertraulichkeit, Integrität und Verfügbarkeit." 
+        },
+        question: { fr: "Que signifie le 'C' dans le modèle CIA ?", en: "What does 'C' stand for in the CIA model?", de: "Wofür steht das 'C' im CIA-Modell?" },
+        options: { fr: ["Calcul", "Confidentialité", "Contrôle", "Cyber"], en: ["Calculation", "Confidentiality", "Control", "Cyber"], de: ["Berechnung", "Vertraulichkeit", "Kontrolle", "Cyber"] },
         answer: 1
       },
       { 
         id: 2, 
-        title: "Module 2 : Ingénierie Sociale & Phishing", 
-        desc: "Identifier les tentatives d'hameçonnage et la manipulation psychologique.",
-        content: "Le phishing (hameçonnage) utilise l'urgence ou la peur pour vous inciter à cliquer sur des liens malveillants ou à fournir vos identifiants confidentiels. Observez toujours avec soin l'adresse e-mail de l'expéditeur.",
-        question: "Quel est le principal signal d'alerte d'un e-mail suspect ?",
-        options: ["Une formule de politesse classique", "Une demande urgente avec lien externe", "Une pièce jointe au format PDF", "Le logo officiel de l'entreprise"],
+        title: { fr: "Module 2 : Ingénierie Sociale & Phishing", en: "Module 2: Social Engineering & Phishing", de: "Modul 2: Social Engineering & Phishing" }, 
+        desc: { fr: "Identifier les tentatives d'hameçonnage.", en: "Identify phishing attempts.", de: "Phishing-Versuche erkennen." },
+        content: { 
+          fr: "Le phishing utilise l'urgence ou la peur pour vous inciter à cliquer sur des liens malveillants.", 
+          en: "Phishing uses urgency or fear to trick you into clicking malicious links.", 
+          de: "Phishing nutzt Dringlichkeit oder Angst, um Sie zum Klicken auf schädliche Links zu verleiten." 
+        },
+        question: { fr: "Quel est le principal signal d'alerte d'un e-mail suspect ?", en: "What is the main warning sign of a suspicious email?", de: "Was ist das Hauptwarnsignal einer verdächtigen E-Mail?" },
+        options: { fr: ["Une formule de politesse", "Une demande urgente avec lien externe", "Une pièce jointe PDF", "Le logo de l'entreprise"], en: ["A polite greeting", "An urgent request with external link", "A PDF attachment", "Company logo"], de: ["Eine höfliche Begrüßung", "Eine dringende Anfrage mit externem Link", "Ein PDF-Anhang", "Firmenlogo"] },
         answer: 1
       },
-      { id: 3, title: "Module 3 : Gestion des Mots de Passe & MFA", desc: "Création de mots de passe forts et authentification à deux facteurs.", content: "Utilisez un gestionnaire de mots de passe pour générer des mots de passe uniques et complexes. Activez systématiquement la double authentification (MFA).", question: "Qu'est-ce que le MFA ?", options: ["Master File Access", "Authentification Multi-Facteurs", "Main Frame Analysis", "Mode Fast Action"], answer: 1 },
-      { id: 4, title: "Module 4 : Sécurité du Réseau & Wi-Fi", desc: "Protéger ses connexions, utiliser un VPN et éviter les Wi-Fi publics.", content: "Les réseaux Wi-Fi publics non sécurisés permettent l'interception facile de données. Utilisez un VPN sur tous les réseaux inconnus pour chiffrer vos communications.", question: "Que fait un VPN ?", options: ["Nettoie le disque dur", "Chiffre votre trafic internet", "Augmente le signal Wi-Fi", "Bloque les virus informatique"], answer: 1 },
-      { id: 5, title: "Module 5 : Protection des Données Personnelles", desc: "Principes du RGPD, confidentialité et gestion de la vie privée.", content: "Limitez les informations personnelles partagées publiquement sur Internet et les réseaux sociaux afin d'éviter l'usurpation d'identité.", question: "Quel principe garantit le contrôle de vos données ?", options: ["RGPD / Confidentialité", "Open Source", "P2P", "Cookies web"], answer: 0 },
-      { id: 6, title: "Module 6 : Malware & Antivirus", desc: "Ransomwares, trojans, spywares et méthodes de protection.", content: "Un ransomware chiffre vos fichiers et exige une rançon. La seule véritable protection réside dans des sauvegardes régulières et isolées.", question: "Que fait un Ransomware ?", options: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche uniquement des publicités", "Efface l'historique web"], answer: 1 },
-      { id: 7, title: "Module 7 : Sécurité des Appareils Mobiles", desc: "Protéger smartphones, permissions d'applications et sauvegardes.", content: "Installez exclusivement des applications provenant des magasins officiels (Google Play Store, App Store) et vérifiez les autorisations demandées.", question: "D'où faut-il télécharger les applications ?", options: ["Sites web au hasard", "Stores officiels", "Forums de discussion", "E-mails reçus"], answer: 1 },
-      { id: 8, title: "Module 8 : Navigation Web Sécurisée", desc: "HTTPS, certificats SSL, bloqueurs de pubs et prévention du tracking.", content: "Vérifiez toujours la présence du cadenas et du protocole HTTPS dans la barre d'adresse avant de saisir des informations sensibles.", question: "Que garantit le 'S' dans HTTPS ?", options: ["Site", "Sécurisé (chiffré)", "System", "Speed"], answer: 1 },
-      { id: 9, title: "Module 9 : Sécurité des E-mails & Messageries", desc: "Chiffrement et détection des pièces jointes suspectes.", content: "Ne téléchargez et ne lancez jamais de pièces jointes exécutables (.exe, .scr) reçues d'expéditeurs inconnus.", question: "Quel fichier est le plus dangereux à exécuter ?", options: ["document.pdf", "image.png", "facture.exe", "texte.txt"], answer: 2 },
-      { id: 10, title: "Module 10 : Sauvegarde & Récupération", desc: "Stratégie de sauvegarde 3-2-1 et plans de continuité.", content: "La règle 3-2-1 : conserver au moins 3 copies de vos données, sur 2 supports différents, dont 1 copie stockée hors site.", question: "Combien de copies recommande la règle 3-2-1 ?", options: ["1 copie", "2 copies", "3 copies", "5 copies"], answer: 2 },
-      { id: 11, title: "Module 11 : Menaces IA & Deepfakes", desc: "Comprendre les nouvelles menaces générées par l'IA.", content: "L'Intelligence Artificielle permet la création d'e-mails d'hameçonnage parfaits et d'imitation vocale (deepfake audio). Vérifiez toujours par un autre canal de communication.", question: "Comment vérifier une demande d'urgence vocale suspecte ?", options: ["Exécuter immédiatement la demande", "Rappeler la personne par un autre canal vérifié", "Ignorer pour toujours", "Envoyer de l'argent"], answer: 1 },
-      { id: 12, title: "Module 12 : Évaluation Finale & Certification", desc: "Examen global récapitulant l'ensemble des principes.", content: "Félicitations pour votre parcours académique ! La cybersécurité requiert une vigilance constante au quotidien.", question: "Quelle est la meilleure défense globale en cybersécurité ?", options: ["Un seul mot de passe court partout", "La vigilance constante de l'utilisateur", "Ne plus utiliser Internet", "Désactiver les mises à jour"], answer: 1 }
+      { id: 3, title: { fr: "Module 3 : Gestion des Mots de Passe & MFA", en: "Module 3: Passwords & MFA", de: "Modul 3: Passwörter & MFA" }, desc: { fr: "Mots de passe forts et double authentification.", en: "Strong passwords and 2FA.", de: "Sichere Passwörter und 2FA." }, content: { fr: "Utilisez un gestionnaire de mots de passe et activez le MFA.", en: "Use a password manager and enable MFA.", de: "Verwenden Sie einen Passwort-Manager und aktivieren Sie MFA." }, question: { fr: "Qu'est-ce que le MFA ?", en: "What is MFA?", de: "Was ist MFA?" }, options: { fr: ["Master File Access", "Authentification Multi-Facteurs", "Main Frame Analysis", "Mode Fast Action"], en: ["Master File Access", "Multi-Factor Authentication", "Main Frame Analysis", "Mode Fast Action"], de: ["Master File Access", "Multi-Faktor-Authentifizierung", "Main Frame Analysis", "Mode Fast Action"] }, answer: 1 },
+      { id: 4, title: { fr: "Module 4 : Sécurité du Réseau & Wi-Fi", en: "Module 4: Network & Wi-Fi Security", de: "Modul 4: Netzwerk- & WLAN-Sicherheit" }, desc: { fr: "Protéger ses connexions et utiliser un VPN.", en: "Protect connections and use a VPN.", de: "Verbindungen schützen und VPN nutzen." }, content: { fr: "Utilisez un VPN sur les réseaux Wi-Fi publics non sécurisés.", en: "Use a VPN on unsecured public Wi-Fi networks.", de: "Verwenden Sie ein VPN in ungesicherten öffentlichen WLANs." }, question: { fr: "Que fait un VPN ?", en: "What does a VPN do?", de: "Was macht ein VPN?" }, options: { fr: ["Nettoie le disque", "Chiffre votre trafic internet", "Augmente le Wi-Fi", "Bloque les virus"], en: ["Cleans the disk", "Encrypts your internet traffic", "Boosts Wi-Fi", "Blocks viruses"], de: ["Bereinigt die Festplatte", "Verschlüsselt Ihren Internetverkehr", "Verbessert WLAN", "Blockiert Viren"] }, answer: 1 },
+      { id: 5, title: { fr: "Module 5 : Protection des Données Personnelles", en: "Module 5: Personal Data Protection", de: "Modul 5: Schutz personenbezogener Daten" }, desc: { fr: "Principes du RGPD et confidentialité.", en: "GDPR principles and privacy.", de: "DSGVO-Grundsätze und Datenschutz." }, content: { fr: "Limitez les informations personnelles partagées publiquement.", en: "Limit personal information shared publicly.", de: "Beschränken Sie öffentlich geteilte persönliche Informationen." }, question: { fr: "Quel principe garantit le contrôle de vos données ?", en: "Which principle guarantees data control?", de: "Welcher Grundsatz garantiert die Datenkontrolle?" }, options: { fr: ["RGPD / Confidentialité", "Open Source", "P2P", "Cookies"], en: ["GDPR / Privacy", "Open Source", "P2P", "Cookies"], de: ["DSGVO / Datenschutz", "Open Source", "P2P", "Cookies"] }, answer: 0 },
+      { id: 6, title: { fr: "Module 6 : Malware & Antivirus", en: "Module 6: Malware & Antivirus", de: "Modul 6: Malware & Antivirus" }, desc: { fr: "Ransomwares et méthodes de protection.", en: "Ransomware and protection methods.", de: "Ransomware und Schutzmethoden." }, content: { fr: "Un ransomware chiffre vos fichiers. La protection idéale est la sauvegarde.", en: "Ransomware encrypts files. The best protection is backup.", de: "Ransomware verschlüsselt Dateien. Der beste Schutz ist ein Backup." }, question: { fr: "Que fait un Ransomware ?", en: "What does ransomware do?", de: "Was macht Ransomware?" }, options: { fr: ["Accélère le PC", "Prend en otage vos fichiers", "Affiche des pubs", "Efface l'historique"], en: ["Speeds up PC", "Holds your files hostage", "Shows ads", "Deletes history"], de: ["Beschleunigt PC", "Hält Dateien als Geisel", "Zeigt Werbung", "Löscht Verlauf"] }, answer: 1 },
+      { id: 7, title: { fr: "Module 7 : Sécurité des Appareils Mobiles", en: "Module 7: Mobile Device Security", de: "Modul 7: Mobile Gerätesicherheit" }, desc: { fr: "Protéger smartphones et permissions.", en: "Protect smartphones and permissions.", de: "Smartphones und Berechtigungen schützen." }, content: { fr: "N'installez des applications que depuis les stores officiels.", en: "Only install apps from official stores.", de: "Installieren Sie Apps nur aus offiziellen Stores." }, question: { fr: "D'où faut-il télécharger les applications ?", en: "Where should apps be downloaded from?", de: "Woher sollten Apps heruntergeladen werden?" }, options: { fr: ["Sites web au hasard", "Stores officiels", "Forums", "E-mails reçus"], en: ["Random websites", "Official stores", "Forums", "Received emails"], de: ["Zufällige Websites", "Offizielle Stores", "Foren", "Erhaltene E-Mails"] }, answer: 1 },
+      { id: 8, title: { fr: "Module 8 : Navigation Web Sécurisée", en: "Module 8: Secure Web Browsing", de: "Modul 8: Sicheres Surfen im Web" }, desc: { fr: "HTTPS et certificats SSL.", en: "HTTPS and SSL certificates.", de: "HTTPS und SSL-Zertifikate." }, content: { fr: "Vérifiez toujours la présence du cadenas et du protocole HTTPS.", en: "Always check for the padlock and HTTPS protocol.", de: "Überprüfen Sie immer das Schloss und das HTTPS-Protokoll." }, question: { fr: "Que garantit le 'S' dans HTTPS ?", en: "What does the 'S' in HTTPS stand for?", de: "Wofür steht das 'S' in HTTPS?" }, options: { fr: ["Site", "Sécurisé (chiffré)", "System", "Speed"], en: ["Site", "Secure (encrypted)", "System", "Speed"], de: ["Site", "Sicher (verschlüsselt)", "System", "Speed"] }, answer: 1 },
+      { id: 9, title: { fr: "Module 9 : Sécurité des E-mails & Messageries", en: "Module 9: Email Security", de: "Modul 9: E-Mail-Sicherheit" }, desc: { fr: "Détection des pièces jointes suspectes.", en: "Detecting suspicious attachments.", de: "Erkennung verdächtiger Anhänge." }, content: { fr: "Ne téléchargez jamais de pièces jointes exécutables (.exe) inconnues.", en: "Never download unknown executable (.exe) attachments.", de: "Laden Sie niemals unbekannte ausführbare Anhänge (.exe) herunter." }, question: { fr: "Quel fichier est le plus dangereux à ouvrir ?", en: "Which file is most dangerous to open?", de: "Welche Datei ist am gefährlichsten zu öffnen?" }, options: { fr: ["document.pdf", "image.png", "facture.exe", "texte.txt"], en: ["document.pdf", "image.png", "invoice.exe", "text.txt"], en: ["document.pdf", "image.png", "invoice.exe", "text.txt"], de: ["document.pdf", "image.png", "rechnung.exe", "text.txt"] }, answer: 2 },
+      { id: 10, title: { fr: "Module 10 : Sauvegarde & Récupération", en: "Module 10: Backup & Recovery", de: "Modul 10: Backup & Wiederherstellung" }, desc: { fr: "Stratégie de sauvegarde 3-2-1.", en: "3-2-1 backup strategy.", de: "3-2-1-Backup-Strategie." }, content: { fr: "Règle 3-2-1 : 3 copies, 2 supports différents, 1 hors site.", en: "3-2-1 rule: 3 copies, 2 different media, 1 offsite.", de: "3-2-1-Regel: 3 Kopien, 2 verschiedene Medien, 1 extern." }, question: { fr: "Combien de copies recommande la règle 3-2-1 ?", en: "How many copies does the 3-2-1 rule recommend?", de: "Wie viele Kopien empfiehlt die 3-2-1-Regel?" }, options: { fr: ["1 copie", "2 copies", "3 copies", "5 copies"], en: ["1 copy", "2 copies", "3 copies", "5 copies"], de: ["1 Kopie", "2 Kopien", "3 Kopien", "5 Kopien"] }, answer: 2 },
+      { id: 11, title: { fr: "Module 11 : Menaces IA & Deepfakes", en: "Module 11: AI Threats & Deepfakes", de: "Modul 11: KI-Bedrohungen & Deepfakes" }, desc: { fr: "Comprendre les menaces générées par l'IA.", en: "Understanding AI-generated threats.", de: "Verständnis KI-generierter Bedrohungen." }, content: { fr: "L'IA permet aux pirates de générer des fausses voix (deepfakes audio).", en: "AI allows hackers to generate fake voices (audio deepfakes).", de: "KI ermöglicht Hackern das Erstellen gefälschter Stimmen (Audio-Deepfakes)." }, question: { fr: "Comment vérifier une demande vocale suspecte ?", en: "How to verify a suspicious voice request?", de: "Wie überprüft man eine verdächtige Sprachanfrage?" }, options: { fr: ["Exécuter immédiatement", "Rappeler la personne par un autre canal", "Ignorer", "Envoyer de l'argent"], en: ["Execute immediately", "Call back via another channel", "Ignore", "Send money"], de: ["Sofort ausführen", "Über einen anderen Kanal zurückrufen", "Ignorieren", "Geld senden"] }, answer: 1 },
+      { id: 12, title: { fr: "Module 12 : Évaluation Finale & Certification", en: "Module 12: Final Exam & Certification", de: "Modul 12: Abschlussprüfung & Zertifizierung" }, desc: { fr: "Examen global récapitulatif.", en: "Global recap exam.", de: "Globale Zusammenfassungsprüfung." }, content: { fr: "Félicitations pour votre parcours académique en cybersécurité !", en: "Congratulations on your cybersecurity academic journey!", de: "Herzlichen Glückwunsch zu Ihrem Weg in der Cybersicherheit!" }, question: { fr: "Quelle est la meilleure défense en cybersécurité ?", en: "What is the best defense in cybersecurity?", de: "Was ist die beste Verteidigung in der Cybersicherheit?" }, options: { fr: ["Un seul mot de passe", "La vigilance constante", "Ne plus utiliser Internet", "Désactiver les mises à jour"], en: ["One password everywhere", "Constant user vigilance", "Stop using internet", "Disable updates"], de: ["Ein Passwort überall", "Ständige Wachsamkeit", "Internet nicht mehr nutzen", "Updates deaktivieren"] }, answer: 1 }
     ];
 
-    // NAVIGATION ENTRE LES VUES
+    // GESTION LANGUE
+    function changerLangue(lang) {
+      currentLang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.innerText = translations[lang][key];
+        }
+      });
+      if (!document.getElementById('view-modules').classList.contains('hidden')) {
+        afficherListeModules();
+      }
+    }
+
+    // NAVIGATION
     function naviguerVers(vue) {
       document.getElementById('view-auth').classList.add('hidden');
       document.getElementById('view-dashboard').classList.add('hidden');
@@ -344,15 +465,25 @@
       if (vue === 'quiz') document.getElementById('view-quiz').classList.remove('hidden');
     }
 
-    // AUTHENTIFICATION
+    // AUTHENTIFICATION & MOT DE PASSE OUBLIÉ
     function basculerModeAuth() {
       isSignUpMode = !isSignUpMode;
-      document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte" : "Connexion à votre compte";
-      document.getElementById('auth-subtitle').innerText = isSignUpMode ? "Inscrivez-vous pour enregistrer votre progression en ligne." : "Connectez-vous pour accéder à votre espace de formation.";
-      document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
+      isRecoveryMode = false;
+      document.getElementById('password-field-box').style.display = 'block';
+      document.getElementById('auth-title').innerText = isSignUpMode ? (currentLang === 'en' ? "Create an account" : currentLang === 'de' ? "Konto erstellen" : "Créer un compte") : (currentLang === 'en' ? "Log in to your account" : currentLang === 'de' ? "In Ihr Konto einloggen" : "Connexion à votre compte");
+      document.getElementById('auth-submit-btn').innerText = isSignUpMode ? (currentLang === 'en' ? "Sign up" : currentLang === 'de' ? "Registrieren" : "S'inscrire") : (currentLang === 'en' ? "Log in" : currentLang === 'de' ? "Anmelden" : "Se connecter");
       document.getElementById('auth-toggle-text').innerHTML = isSignUpMode ? 
-        'Déjà un compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Se connecter</button>' : 
-        'Pas encore de compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S\'inscrire</button>';
+        (currentLang === 'en' ? 'Already have an account? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Log in</button>' : currentLang === 'de' ? 'Bereits ein Konto? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Anmelden</button>' : 'Déjà un compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Se connecter</button>') : 
+        (currentLang === 'en' ? "Don't have an account? <button onclick=\"basculerModeAuth()\" class=\"text-emerald-400 font-semibold hover:underline\">Sign up</button>" : currentLang === 'de' ? 'Noch kein Konto? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">Registrieren</button>' : 'Pas encore de compte ? <button onclick="basculerModeAuth()" class="text-emerald-400 font-semibold hover:underline">S\'inscrire</button>');
+      document.getElementById('auth-feedback').innerText = '';
+    }
+
+    function afficherModeRecuperation() {
+      isRecoveryMode = true;
+      document.getElementById('password-field-box').style.display = 'none';
+      document.getElementById('auth-title').innerText = currentLang === 'en' ? "Reset Password" : currentLang === 'de' ? "Passwort zurücksetzen" : "Réinitialiser le mot de passe";
+      document.getElementById('auth-subtitle').innerText = currentLang === 'en' ? "Enter your email to receive a recovery link." : currentLang === 'de' ? "Geben Sie Ihre E-Mail ein, um einen Link zu erhalten." : "Entrez votre e-mail pour recevoir un lien de réinitialisation.";
+      document.getElementById('auth-submit-btn').innerText = currentLang === 'en' ? "Send Reset Link" : currentLang === 'de' ? "Link senden" : "Envoyer le lien";
       document.getElementById('auth-feedback').innerText = '';
     }
 
@@ -365,20 +496,34 @@
       feedback.innerText = "Traitement en cours...";
       feedback.className = "mt-4 text-xs text-center font-medium text-amber-400";
 
+      if (isRecoveryMode) {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.href
+        });
+        if (error) {
+          feedback.innerText = "Erreur : " + error.message;
+          feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
+        } else {
+          feedback.innerText = "E-mail de réinitialisation envoyé ! Vérifiez votre boîte de réception.";
+          feedback.className = "mt-4 text-xs text-center font-medium text-emerald-400";
+        }
+        return;
+      }
+
       if (isSignUpMode) {
         const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) {
-          feedback.innerText = "Erreur d'inscription : " + error.message;
+          feedback.innerText = "Erreur : " + error.message;
           feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
         } else {
-          feedback.innerText = "Inscription réussie ! Connexion automatique...";
+          feedback.innerText = "Succès ! Connexion en cours...";
           feedback.className = "mt-4 text-xs text-center font-medium text-emerald-400";
           setTimeout(() => initialiserSession(data.user), 1000);
         }
       } else {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
-          feedback.innerText = "E-mail ou mot de passe incorrect.";
+          feedback.innerText = "Identifiants incorrects.";
           feedback.className = "mt-4 text-xs text-center font-medium text-rose-400";
         } else {
           initialiserSession(data.user);
@@ -389,8 +534,8 @@
     async function initialiserSession(user) {
       currentUser = user;
       document.getElementById('user-profile-header').classList.remove('hidden');
-
       await chargerProgressionSupabase();
+      await chargerInfosCertificatSupabase();
       naviguerVers('modules');
     }
 
@@ -398,11 +543,12 @@
       await supabaseClient.auth.signOut();
       currentUser = null;
       validatedModules.clear();
+      userMetadata = { firstname: '', lastname: '', gender: '' };
       document.getElementById('user-profile-header').classList.add('hidden');
       naviguerVers('auth');
     }
 
-    // BASE DE DONNÉES SUPABASE
+    // BASE DE DONNÉES
     async function chargerProgressionSupabase() {
       if (!currentUser) return;
       try {
@@ -416,27 +562,34 @@
           validatedModules = new Set(data.validated_modules);
         }
       } catch (err) {
-        console.error("Erreur Supabase :", err);
+        console.error("Erreur progression :", err);
       }
     }
 
     async function sauvegarderProgressionSupabase() {
       if (!currentUser) return;
-      const modulesArray = Array.from(validatedModules);
       try {
         await supabaseClient
           .from('user_progress')
           .upsert({ 
             user_ip: currentUser.id, 
-            validated_modules: modulesArray,
+            validated_modules: Array.from(validatedModules),
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_ip' });
       } catch (err) {
-        console.error("Erreur de sauvegarde :", err);
+        console.error("Erreur sauvegarde :", err);
       }
     }
 
-    // LISTE DES MODULES & COURS
+    async function chargerInfosCertificatSupabase() {
+      if (!currentUser) return;
+      const { data } = await supabaseClient.auth.getUser();
+      if (data && data.user && data.user.user_metadata) {
+        userMetadata = data.user.user_metadata;
+      }
+    }
+
+    // MODULES & COURS
     function afficherListeModules() {
       const container = document.getElementById('modules-list');
       if (!container) return;
@@ -454,11 +607,11 @@
               </span>
               ${isValidated ? '<span class="text-xs font-bold text-emerald-400">✓ Validé</span>' : ''}
             </div>
-            <h3 class="text-lg font-bold text-slate-100 mb-2">${mod.title}</h3>
-            <p class="text-xs text-slate-400 leading-relaxed mb-4">${mod.desc}</p>
+            <h3 class="text-lg font-bold text-slate-100 mb-2">${mod.title[currentLang]}</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">${mod.desc[currentLang]}</p>
           </div>
           <button onclick="ouvrirCourse(${mod.id})" class="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors mt-auto">
-            ${isValidated ? 'Revoir la leçon' : 'Commencer le module'}
+            ${isValidated ? (currentLang === 'en' ? 'Review lesson' : currentLang === 'de' ? 'Lektion wiederholen' : 'Revoir la leçon') : (currentLang === 'en' ? 'Start module' : currentLang === 'de' ? 'Modul starten' : 'Commencer le module')}
           </button>
         `;
         container.appendChild(card);
@@ -477,8 +630,8 @@
     function ouvrirCourse(id, echec = false) {
       currentModule = modulesData.find(m => m.id === id);
       document.getElementById('course-badge').innerText = `Module ${currentModule.id}/12`;
-      document.getElementById('course-title').innerText = currentModule.title;
-      document.getElementById('course-content').innerText = currentModule.content;
+      document.getElementById('course-title').innerText = currentModule.title[currentLang];
+      document.getElementById('course-content').innerText = currentModule.content[currentLang];
 
       const alertBox = document.getElementById('course-alert');
       if (echec) alertBox.classList.remove('hidden');
@@ -487,19 +640,18 @@
       naviguerVers('course');
     }
 
-    // PASSER AU QUIZ (SÉPARÉ DU COURS)
     function passerAuQuiz() {
       if (!currentModule) return;
       selectedOption = null;
 
-      document.getElementById('quiz-module-title').innerText = currentModule.title;
-      document.getElementById('quiz-question').innerText = currentModule.question;
+      document.getElementById('quiz-module-title').innerText = currentModule.title[currentLang];
+      document.getElementById('quiz-question').innerText = currentModule.question[currentLang];
       document.getElementById('quiz-feedback').innerText = '';
 
       const optionsContainer = document.getElementById('quiz-options');
       optionsContainer.innerHTML = '';
 
-      currentModule.options.forEach((opt, idx) => {
+      currentModule.options[currentLang].forEach((opt, idx) => {
         const btn = document.createElement('button');
         btn.className = "w-full text-left p-3 border border-slate-800 bg-slate-950 rounded-lg text-xs hover:border-slate-700 transition-all option-btn";
         btn.innerText = `${String.fromCharCode(65 + idx)}) ${opt}`;
@@ -517,7 +669,7 @@
     async function validerQuiz() {
       const feedback = document.getElementById('quiz-feedback');
       if (selectedOption === null) {
-        feedback.innerText = "Veuillez sélectionner une réponse.";
+        feedback.innerText = currentLang === 'en' ? "Please select an answer." : currentLang === 'de' ? "Bitte wählen Sie eine Antwort." : "Veuillez sélectionner une réponse.";
         feedback.className = "mt-3 text-xs text-center font-medium text-amber-400";
         return;
       }
@@ -526,31 +678,27 @@
         validatedModules.add(currentModule.id);
         await sauvegarderProgressionSupabase();
 
-        feedback.innerText = "Bravo ! Réponse correcte (+100%). Module validé !";
+        feedback.innerText = currentLang === 'en' ? "Correct! Module validated!" : currentLang === 'de' ? "Richtig! Modul validiert!" : "Bravo ! Réponse correcte. Module validé !";
         feedback.className = "mt-3 text-xs text-center font-medium text-emerald-400";
         setTimeout(() => naviguerVers('modules'), 1500);
       } else {
-        feedback.innerText = "Échec au quiz. Redirection vers la leçon...";
+        feedback.innerText = currentLang === 'en' ? "Incorrect. Returning to lesson..." : currentLang === 'de' ? "Falsch. Zurück zur Lektion..." : "Échec au quiz. Redirection vers la leçon...";
         feedback.className = "mt-3 text-xs text-center font-medium text-rose-400";
         setTimeout(() => ouvrirCourse(currentModule.id, true), 1800);
       }
     }
 
-    // TABLEAU DE BORD UTILISATEUR
+    // TABLEAU DE BORD
     function mettreAJourDashboard() {
       if (!currentUser) return;
-      
       document.getElementById('dash-email').innerText = currentUser.email;
-      const createdAt = new Date(currentUser.created_at).toLocaleDateString('fr-FR', {
-        year: 'numeric', month: 'long', day: 'numeric'
-      });
-      document.getElementById('dash-date').innerText = `Membre depuis le ${createdAt}`;
+      document.getElementById('dash-name-display').innerText = userMetadata.firstname ? `${userMetadata.gender} ${userMetadata.firstname} ${userMetadata.lastname}` : '';
 
       const count = validatedModules.size;
       const percent = Math.round((count / 12) * 100);
 
       document.getElementById('dash-percent').innerText = `${percent}%`;
-      document.getElementById('dash-count-text').innerText = `${count} / 12 modules validés`;
+      document.getElementById('dash-count-text').innerText = `${count} / 12`;
       document.getElementById('dash-progress-bar').style.width = `${percent}%`;
 
       if (count === 12) document.getElementById('dash-cert-box').classList.remove('hidden');
@@ -566,21 +714,45 @@
         item.innerHTML = `
           <div class="flex items-center gap-3">
             <span class="font-bold text-slate-400">#${mod.id}</span>
-            <span class="text-slate-200 font-medium">${mod.title}</span>
+            <span class="text-slate-200 font-medium">${mod.title[currentLang]}</span>
           </div>
           <span class="${isValid ? 'text-emerald-400 font-bold' : 'text-slate-500'}">
-            ${isValid ? '✓ Validé' : 'Non validé'}
+            ${isValid ? (currentLang === 'en' ? '✓ Validated' : currentLang === 'de' ? '✓ Validiert' : '✓ Validé') : (currentLang === 'en' ? 'Pending' : currentLang === 'de' ? 'Ausstehend' : 'Non validé')}
           </span>
         `;
         listContainer.appendChild(item);
       });
     }
 
-    // CERTIFICAT
+    // CERTIFICAT & FORMULAIRE INFOS
+    function verifierInfosCertificat() {
+      if (validatedModules.size < 12) return;
+      if (!userMetadata.firstname || !userMetadata.lastname) {
+        document.getElementById('cert-info-modal').classList.remove('hidden');
+      } else {
+        ouvrirCertificat();
+      }
+    }
+
+    async function sauvegarderInfosCertificat(event) {
+      event.preventDefault();
+      const firstname = document.getElementById('cert-firstname').value.trim();
+      const lastname = document.getElementById('cert-lastname').value.trim();
+      const gender = document.getElementById('cert-gender').value;
+
+      userMetadata = { firstname, lastname, gender };
+
+      await supabaseClient.auth.updateUser({
+        data: { firstname, lastname, gender }
+      });
+
+      document.getElementById('cert-info-modal').classList.add('hidden');
+      ouvrirCertificat();
+    }
+
     function ouvrirCertificat() {
-      if (!currentUser) return;
-      document.getElementById('cert-user-email').innerText = currentUser.email;
-      const aujourdhui = new Date().toLocaleDateString('fr-FR', {
+      document.getElementById('cert-user-fullname').innerText = `${userMetadata.gender} ${userMetadata.firstname} ${userMetadata.lastname}`;
+      const aujourdhui = new Date().toLocaleDateString(currentLang === 'en' ? 'en-US' : currentLang === 'de' ? 'de-DE' : 'fr-FR', {
         year: 'numeric', month: 'long', day: 'numeric'
       });
       document.getElementById('cert-date').innerText = aujourdhui;
@@ -591,11 +763,11 @@
       document.getElementById('certificate-modal').classList.add('hidden');
     }
 
-    // DÉTECTION AUTOMATIQUE DE SESSION AU CHARGEMENT / RAFRAÎCHISSEMENT
+    // CHARGEMENT INITIAL
     document.addEventListener('DOMContentLoaded', () => {
-      supabaseClient.auth.onAuthStateChange((event, session) => {
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (session && session.user) {
-          initialiserSession(session.user);
+          await initialiserSession(session.user);
         } else {
           naviguerVers('auth');
         }
